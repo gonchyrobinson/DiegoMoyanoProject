@@ -11,4 +11,9 @@ namespace DiegoMoyanoProject.Repository
         public bool DeleteUser(int id);
         public string? GetMail(int? id);
     }
+    public interface IUserDataRepository
+    {
+        public bool UploadImg(byte[]? img);
+        public byte[] DownloadImg();
+    }
 }

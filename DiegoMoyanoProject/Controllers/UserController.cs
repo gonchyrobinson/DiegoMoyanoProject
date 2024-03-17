@@ -65,6 +65,8 @@ namespace DiegoMoyanoProject.Controllers
             {
                 try
                 {
+                    if (IsNotLogued()) return RedirectToAction("Index", "Login");
+
                     //if (!HttpContext.Session.IsAvailable || HttpContext.Session.GetString("Mail") == null) { return RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
                     return View(new CreateUserViewModel());
                 }
@@ -82,6 +84,8 @@ namespace DiegoMoyanoProject.Controllers
 
                 try
                 {
+                    if (IsNotLogued()) return RedirectToAction("Index", "Login");
+
                     //if (!HttpContext.Session.IsAvailable || HttpContext.Session.GetString("Mail") == null || HttpContext.Session.GetString("Role")=="Operative") { return RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
 
                     if (ModelState.IsValid)
@@ -106,6 +110,8 @@ namespace DiegoMoyanoProject.Controllers
             {
                 try
                 {
+                    if (IsNotLogued()) return RedirectToAction("Index", "Login");
+
                     //if (!HttpContext.Session.IsAvailable || HttpContext.Session.GetString("Mail") == null || (HttpContext.Session.GetString("Role") == "Operative" && HttpContext.Session.GetInt32("Id")!=id)) { RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
                     var usu = _userRepository.GetUserById(id);
                     var usuvm = _mapper.Map<UpdateUserViewModel>(usu);
@@ -123,6 +129,8 @@ namespace DiegoMoyanoProject.Controllers
             {
                 try
                 {
+                    if (IsNotLogued()) return RedirectToAction("Index", "Login");
+
                     //if (!HttpContext.Session.IsAvailable || HttpContext.Session.GetString("Mail") == null || (HttpContext.Session.GetString("Role") == "Operative" && HttpContext.Session.GetInt32("Id") != id)) { return RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
                     if (ModelState.IsValid)
                     {
@@ -141,20 +149,22 @@ namespace DiegoMoyanoProject.Controllers
                     return BadRequest();
                 }
             }
-            
-                    public IActionResult DeleteUser(int id)
-                    {
-                        try
-                        {
-                            if (!HttpContext.Session.IsAvailable || HttpContext.Session.GetString("Mail") == null || (HttpContext.Session.GetString("Role") == "Operative" && HttpContext.Session.GetInt32("Id") != id)) { return RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
-                            _userRepository.DeleteUser(id);
-                            return RedirectToAction("Index");
-                        }catch(Exception e)
-                        {
-                            _logger.LogError(e.Message);
-                            return BadRequest();
-                        }
-                    }
+
+            public IActionResult DeleteUser(int id)
+            {
+                try
+                {
+
+                    if (!HttpContext.Session.IsAvailable || HttpContext.Session.GetString("Mail") == null || (HttpContext.Session.GetString("Role") == "Operative" && HttpContext.Session.GetInt32("Id") != id)) { return RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
+                    _userRepository.DeleteUser(id);
+                    return RedirectToAction("Index");
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.Message);
+                    return BadRequest();
+                }
+            }
 
         }
     }
