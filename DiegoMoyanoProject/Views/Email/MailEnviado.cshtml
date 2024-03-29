@@ -1,0 +1,29 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap 5 con Fuente Llamativa</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="display-4">Su mail ha sido enviado correctamente</h1>
+        <p class="lead">Haga clic en el boton de abajo para volver a la pestaña de inicio</p>
+        <div class="d-grid gap-2 mx-auto">
+            <a class="btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder" asp-controller="Home" asp-action="Index">Volver a Inicio</a>
+        </div>
+    </div>
+
+    <!-- Scripts de Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

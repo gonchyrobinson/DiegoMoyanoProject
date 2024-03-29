@@ -9,7 +9,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromSeconds(300);
+    options.IdleTimeout = TimeSpan.FromSeconds(1200);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
@@ -23,6 +23,7 @@ builder.Services.AddSingleton<string>(CadenaDeConexion);
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserDataRepository, UserDataRepository>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
