@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@model DiegoMoyanoProject.ViewModels.Home.IndexHomeViewModel;
 <div class="text-center container">
     <div class="container">
         <h1 class="display-4">Blue Cheetah</h1>
@@ -9,7 +10,14 @@
         <div class="container px-5 my-5">
             <div class="text-center">
                 <h2 class="display-4 fw-bolder mb-4">Ingresa para ver tu rendimiento</h2>
-                <a class="btn btn-outline-light btn-lg px-5 py-3 fs-6 fw-bolder" asp-controller="Login" asp-action="Index">Iniciar Sesión</a>
+                @if (!Model.IsLogued)
+                {
+                    <a class="btn btn-outline-light btn-lg px-5 py-3 fs-6 fw-bolder" asp-controller="Login" asp-action="Index">Iniciar Sesión</a>
+                }
+                else
+                {
+                    <a class="btn btn-outline-light btn-lg px-5 py-3 fs-6 fw-bolder" asp-controller="Login" asp-action="LogOut">Cerrar Sesión</a>
+                }
             </div>
         </div>
     </section>

@@ -30,7 +30,15 @@ namespace DiegoMoyanoProject.Controllers
                 if (!ModelState.IsValid) throw new ModelStateInvalidException("Invalid data");
                 var loguedUser = _loginManagment.Log(loginvm.Mail, loginvm.Pass);
                 SessionStart(loguedUser);
-                return RedirectToRoute(new {Controller = "Home", Action = "Privacy"});
+                if (LoguedUserRole() == Role.Operative)
+                {
+
+                return RedirectToRoute(new {Controller = "UserData", Action = "Index"});
+                }
+                else
+                {
+                    return RedirectToRoute(new { Controller = "User", Action = "Index" });
+                }
             }
             catch (ModelStateInvalidException ex) 
             {
@@ -50,12 +58,22 @@ namespace DiegoMoyanoProject.Controllers
                 return RedirectToRoute(new { Controller = "Shared", Action = "Error" });
             }
         }
+        [HttpGet]
+        public IActionResult LogOut()
+        {
+            HttpContext.Session.Clear();
+            return(RedirectToAction("Index", "Home"));
+        }
         private void SessionStart(User loguedUser)
         {
             HttpContext.Session.SetString("Username", loguedUser.Username);
             HttpContext.Session.SetString("Mail", loguedUser.Mail);
             HttpContext.Session.SetInt32("Role", (int)loguedUser.Role);
             HttpContext.Session.SetInt32("Id", loguedUser.Id);
+        }
+        private Role LoguedUserRole()
+        {
+            return (Role)HttpContext.Session.GetInt32("Role");
         }
     }
 }

@@ -1,0 +1,58 @@
+﻿@model DiegoMoyanoProject.ViewModels.UserData.IndexUserDataViewModel;
+
+@if (Model.Images.Count() > 0)
+{
+    <div class="container text-center">
+        <h1 class="display-4">Datos de Usuario</h1>
+    </div>
+
+    <div class="gallery container row" onclick="openLightbox(event)">
+        @foreach (var img in Model.Images)
+        {
+            <div class="container text-center col-lg-4 col-md-6 col-sm-12">
+                <img src="@img.Path"
+                     alt="@img.GetImageTypeDescription()" class="img-fluid rounded border border-dark">
+
+                <h5 class="text-primary font-weight-bold">@img.GetImageTypeDescription()</h5>
+            </div>
+        }
+    </div>
+    <!-- Lightbox container -->
+    <div id="lightbox">
+        <!-- Close button -->
+        <span id="close-btn" onclick="closeLightbox()">&times;</span>
+
+        <!-- Main lightbox image -->
+        <img id="lightbox-img" src="" alt="lightbox image">
+
+        <!-- Thumbnails container -->
+        <div id="thumbnail-container">
+            <!-- Thumbnails will be added dynamically using JavaScript -->
+        </div>
+
+        <!-- Previous and Next buttons -->
+        <button id="prev-btn" onclick="changeImage(-1)">&lt; Prev</button>
+        <button id="next-btn" onclick="changeImage(1)">Next &gt;</button>
+    </div>
+}
+else
+{
+    <section class="py-3 py-md-5 min-vh-100 d-flex justify-content-center align-items-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="text-center">
+                        <h2 class="d-flex justify-content-center align-items-center gap-2 mb-4">
+                            <span class="display-1 fw-bold">4</span>
+                            <i class="bi bi-exclamation-circle-fill text-danger display-4"></i>
+                            <span class="display-1 fw-bold bsb-flip-h">4</span>
+                        </h2>
+                        <h3 class="h2 mb-2">Oops! Aún no se cargaron sus datos</h3>
+                        <p class="mb-5">Si quiere ver sus datos, por favor vuelva a ingresar mas tarde</p>
+                        <a class="btn bsb-btn-5xl btn-dark rounded-pill px-5 fs-6 m-0" asp-controller="Home" asp-action="Index" role="button">Volver a inicio</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}

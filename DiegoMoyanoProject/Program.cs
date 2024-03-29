@@ -22,6 +22,7 @@ builder.Configuration.GetConnectionString("SqliteConexion")!.ToString();
 builder.Services.AddSingleton<string>(CadenaDeConexion);
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserDataRepository, UserDataRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

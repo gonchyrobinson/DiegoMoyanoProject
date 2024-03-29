@@ -1,6 +1,8 @@
 using DiegoMoyanoProject.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using DiegoMoyanoProject.ViewModels;
+using DiegoMoyanoProject.ViewModels.Home;
 
 namespace DiegoMoyanoProject.Controllers
 {
@@ -15,7 +17,7 @@ namespace DiegoMoyanoProject.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View(new IndexHomeViewModel(IsLogued()));
         }
 
         public IActionResult Privacy()
@@ -27,6 +29,10 @@ namespace DiegoMoyanoProject.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        private bool IsLogued()
+        {
+            return !(!HttpContext.Session.IsAvailable || HttpContext.Session.GetString("Mail") == null);
         }
     }
 

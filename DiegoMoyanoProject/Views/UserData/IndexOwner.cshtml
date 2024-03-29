@@ -1,0 +1,115 @@
+﻿@model DiegoMoyanoProject.ViewModels.UserData.IndexOwnerUserDataViewModel;
+@using System.ComponentModel;
+<div class="container text-center">
+    <h1 class="display-4">Datos de Usuario</h1>
+</div>
+
+<div class="gallery container row" onclick="openLightbox(event)">
+    <div class="container text-center col-lg-4 col-md-6 col-sm-12">
+        @if (Model.Sales != null)
+        {
+
+            <img src="@Model.Sales.Path"
+                 alt="@Model.Sales.ImageType" class="img-fluid rounded border border-dark">
+        }
+        else
+        {
+            <img src="~/img/UserData/noImage.jpg"
+                 alt="No image" class="img-fluid rounded border border-dark">
+        }
+        <h5 class="text-primary font-weight-bold">Ventas</h5>
+        <ul class="action-list list-unstyled list-inline">
+            <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.Sales" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
+            @if (Model.Sales != null)
+            {
+
+                <li><a asp-controller="UserData" asp-action="Delete" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.Sales" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+            }
+        </ul>
+    </div>
+    <div class="container text-center col-lg-4 col-md-6 col-sm-12">
+        @if (Model.Campaigns != null)
+        {
+
+            <img src="@Model.Campaigns.Path"
+                 alt="@Model.Campaigns.ImageType" class="img-fluid rounded border border-dark">
+        }
+        else
+        {
+            <img src="~/img/UserData/noImage.jpg"
+                 alt="No image" class="img-fluid rounded border border-dark">
+        }
+        <h5 class="text-primary font-weight-bold">Campañas</h5>
+        <ul class="action-list list-unstyled list-inline">
+            <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.Campaigns" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
+            @if (Model.Campaigns != null)
+            {
+
+                <li><a asp-controller="UserData" asp-action="Delete" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.Campaigns" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+            }
+        </ul>
+    </div>
+    <div class="container text-center col-lg-4 col-md-6 col-sm-12">
+        @if (Model.SpentMoney != null)
+        {
+
+            <img src="@Model.SpentMoney.Path"
+                 alt="@Model.SpentMoney.ImageType" class="img-fluid rounded border border-dark">
+        }
+        else
+        {
+            <img src="~/img/UserData/noImage.jpg"
+                 alt="No image" class="img-fluid rounded border border-dark">
+        }
+        <h5 class="text-primary font-weight-bold">Dinero Invertido</h5>
+        <ul class="action-list list-unstyled list-inline">
+            <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.SpentMoney" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
+            @if (Model.SpentMoney != null)
+            {
+
+                <li><a asp-controller="UserData" asp-action="Delete" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.SpentMoney" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+            }
+        </ul>
+    </div>
+    <div class="container text-center col-lg-4 col-md-6 col-sm-12">
+        @if (Model.Listings != null)
+        {
+
+            <img src="@Model.Listings.Path"
+                 alt="@Model.Listings.ImageType" class="img-fluid rounded border border-dark">
+        }
+        else
+        {
+            <img src="~/img/UserData/noImage.jpg"
+                 alt="No image" class="img-fluid rounded border border-dark">
+        }
+        <h5 class="text-primary font-weight-bold">Articulos de venta</h5>
+        <ul class="action-list list-unstyled list-inline">
+            <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.Listings" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
+            @if (Model.Listings != null)
+            {
+
+                <li><a asp-controller="UserData" asp-action="Delete" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.Listings" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+            }
+        </ul>
+    </div>
+
+</div>
+
+<!-- Lightbox container -->
+<div id="lightbox">
+    <!-- Close button -->
+    <span id="close-btn" onclick="closeLightbox()">&times;</span>
+
+    <!-- Main lightbox image -->
+    <img id="lightbox-img" src="" alt="lightbox image">
+
+    <!-- Thumbnails container -->
+    <div id="thumbnail-container">
+        <!-- Thumbnails will be added dynamically using JavaScript -->
+    </div>
+
+    <!-- Previous and Next buttons -->
+    <button id="prev-btn" onclick="changeImage(-1)">&lt; Prev</button>
+    <button id="next-btn" onclick="changeImage(1)">Next &gt;</button>
+</div>
