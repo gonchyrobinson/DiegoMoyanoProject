@@ -11,7 +11,7 @@ namespace DiegoMoyanoProject.Repository
 
         public EmailSender()
         {
-            _email = "locorobinson@hotmail.com";
+            _email = "gonchyrobinson@hotmail.com";
             _pass = "rickyrobinson1410";
         }
 
