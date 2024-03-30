@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Reflection;
 
 namespace DiegoMoyanoProject.Models
 {
@@ -7,12 +8,28 @@ namespace DiegoMoyanoProject.Models
         [Description("Ventas")]
         Sales = 0,
         [Description("Dinero Invertido")]
-        SpentMoney =1,
+        SpentMoney = 1,
         [Description("Campañas")]
         Campaigns = 2,
         [Description("Articulos de Venta")]
         Listings = 3
     }
+    public static class Extensions
+    {
+
+        public static string GetDescription(this ImageType imageType)
+        {
+            var typeInfo = typeof(ImageType);
+            FieldInfo field = typeInfo.GetField(imageType.ToString());
+            object[] attributes = field?.GetCustomAttributes(typeof(DescriptionAttribute), false);
+
+            return attributes != null && attributes.Length > 0 ? ((DescriptionAttribute)attributes[0]).Description : imageType.ToString();
+        }
+    }
+
+    
+
+
     public class ImageData
     {
         private int userId;
@@ -21,7 +38,8 @@ namespace DiegoMoyanoProject.Models
 
         public ImageData()
         {
-        }
+        
+            }
 
         public ImageData(int userId, string path, ImageType imageType)
         {
