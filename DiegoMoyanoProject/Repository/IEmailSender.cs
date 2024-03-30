@@ -1,8 +1,10 @@
-﻿namespace DiegoMoyanoProject.Repository
+﻿using DiegoMoyanoProject.Models;
+
+namespace DiegoMoyanoProject.Repository
 {
     public interface IEmailSender
     {
-       public  Task SendEmailInvertir(string mail, string nombre, int cantInvertir);
-       public Task SendEmailRetirar(string mail, string nombre, int cantRetirar);
+       public  Task SendEmail(Email mail);
+     
     }
 }

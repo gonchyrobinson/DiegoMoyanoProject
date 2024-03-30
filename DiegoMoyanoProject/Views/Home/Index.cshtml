@@ -4,20 +4,24 @@
 @model DiegoMoyanoProject.ViewModels.Home.IndexHomeViewModel;
 <div class="text-center container">
     <div class="container">
-        <h1 class="display-4">Blue Cheetah</h1>
+        <h1 class="display-4 fw-bolder">Blue Cheetah</h1>
     </div>
     <section class="py-5 bg-image-home text-white" >
         <div class="container px-5 my-5">
             <div class="text-center">
-                <h2 class="display-4 fw-bolder mb-4 text-light">Ingresa para ver tu rendimiento</h2>
+                <div class="d-inline-block bg-light rounded mb-2">
+                    <h2 class="display-4 fw-bolder mb-4 text-primary">Ingresa para ver tu rendimiento</h2>
+                </div>
+                <div class="d-inline-block bg-light rounded mb-2">
                 @if (!Model.IsLogued)
                 {
-                    <a class="btn btn-outline-light btn-lg px-5 py-3 fs-6 fw-bolder" asp-controller="Login" asp-action="Index">Iniciar Sesión</a>
+                    <a class="btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder" asp-controller="Login" asp-action="Index">Iniciar Sesión</a>
                 }
                 else
                 {
-                    <a class="btn btn-outline-light btn-lg px-5 py-3 fs-6 fw-bolder" asp-controller="Login" asp-action="LogOut">Cerrar Sesión</a>
+                    <a class="btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder" asp-controller="Login" asp-action="LogOut">Cerrar Sesión</a>
                 }
+                </div>
             </div>
         </div>
     </section>

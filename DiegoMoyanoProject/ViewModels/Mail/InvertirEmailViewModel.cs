@@ -8,30 +8,30 @@ namespace DiegoMoyanoProject.ViewModels.Mail
         public InvertirEmailViewModel(string name, string email, int cantInvertir)
         {
             Name = name;
-            Email = email;
-            CantInvertir = cantInvertir;
+            Mail = email;
+            Money = cantInvertir;
         }
         public InvertirEmailViewModel()
         {
             Name = "";
-            Email = "";
-            CantInvertir = 0;
+            Mail = "";
+            Money = 0;
         }
         public InvertirEmailViewModel(string name, string mail)
         {
             Name = name;
-            Email = mail;
-            CantInvertir = 0;
+            Mail = mail;
+            Money = 0;
         }
 
 
         [Display(Name = "Nombre de Usuario")]
         public string Name { get; set; }
         [Display(Name = "Correo Electrónico")]
-        public string Email { get; set; }
+        public string Mail { get; set; }
         [Display(Name = "Cantidad a invertir")]
         [Required(ErrorMessage = "Por favor ingrese una cantidad válida")]
-        public int CantInvertir { get; set; }
+        public int Money { get; set; }
  
     }
 }

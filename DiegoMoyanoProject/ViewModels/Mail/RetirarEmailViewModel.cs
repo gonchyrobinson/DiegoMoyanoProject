@@ -8,30 +8,30 @@ namespace DiegoMoyanoProject.ViewModels.Mail
         public RetirarEmailViewModel(string name, string email, int cantRetirar)
         {
             Name = name;
-            Email = email;
-            CantRetirar = cantRetirar;
+            Mail = email;
+            Money = cantRetirar;
         }
         public RetirarEmailViewModel()
         {
             Name = "";
-            Email = "";
-            CantRetirar = 0;
+            Mail = "";
+            Money = 0;
         }
         public RetirarEmailViewModel(string name, string mail)
         {
             Name = name;
-            Email = mail;
-            CantRetirar = 0;
+            Mail = mail;
+            Money = 0;
         }
 
 
         [Display(Name = "Nombre de Usuario")]
         public string Name { get; set; }
         [Display(Name = "Correo Electrónico")]
-        public string Email { get; set; }
+        public string Mail { get; set; }
         [Display(Name = "Cantidad que desea retirar")]
         [Required(ErrorMessage = "Por favor ingrese una cantidad válida")]
-        public int CantRetirar { get; set; }
+        public int Money { get; set; }
 
     }
 }

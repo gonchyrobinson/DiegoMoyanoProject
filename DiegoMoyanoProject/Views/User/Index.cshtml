@@ -168,13 +168,14 @@
                                                     <li><a asp-controller="User" asp-action="DeleteUser" asp-route-id="@usu.Id" data-tip="delete"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
                                                 </ul>
                                             </td>
-                                            <td><button type="button" class="btn btn-success"><a class="text-decoration-none text-light" asp-controller="UserData" asp-action="Index" asp-route-id="@usu.Id">Ver Datos</a></button></td>
+                                            <td><button type="button" class="btn btn-success"><a class="text-decoration-none text-light" asp-controller="UserData" asp-action="Index" asp-route-id="@usu.Id">Ver Inversion</a></button></td>
                                         }
                                         else
                                         {
                                             <td></td>
-                                            <td></td>
-                                            @* <td><button type="button" class="btn btn-success"><a class="text-decoration-none text-light" href="Tablero/ListarTablerosPorUsuario?id=@usu.Id">ListarTableros</a></button></td> *@
+                                                <td><button type="button" class="btn btn-success"><a class="text-decoration-none text-light" asp-controller="UserData" asp-action="Index" asp-route-id="@usu.Id">Ver Inversion</a></button></td>
+
+                                                @* <td><button type="button" class="btn btn-success"><a class="text-decoration-none text-light" href="Tablero/ListarTablerosPorUsuario?id=@usu.Id">ListarTableros</a></button></td> *@
                                         }
                                     }
 

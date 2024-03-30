@@ -10,12 +10,14 @@ namespace DiegoMoyanoProject.Controllers
         private readonly IEmailSender _IEmailSenderRepository;
         private readonly IUserRepository _IUserRepository;
         private readonly ILogger<EmailController> _logger;
+        private readonly IMapper _mapper;
 
-        public EmailController(IEmailSender iEmailSenderRepository, IUserRepository iUserRepository, ILogger<EmailController> logger)
+        public EmailController(IEmailSender iEmailSenderRepository, IUserRepository iUserRepository, ILogger<EmailController> logger, IMapper mapper)
         {
             _IEmailSenderRepository = iEmailSenderRepository;
             _IUserRepository = iUserRepository;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -55,7 +57,9 @@ namespace DiegoMoyanoProject.Controllers
             {
                 if (IsNotLogued()) { return RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
                 if (LoguedUserRole() != Role.Operative) { throw new Exception("El usuario no es operativo, por lo cual no puede acceder"); }
-                await _IEmailSenderRepository.SendEmailInvertir(emailVM.Email, emailVM.Name, emailVM.CantInvertir);
+                Email mail = _mapper.Map<Email>(emailVM);
+                mail.Invest();
+                await _IEmailSenderRepository.SendEmail(mail);
                 return RedirectToAction("MailEnviado", new {enviado=true});
             }catch(Exception ex)
                 {
@@ -87,7 +91,9 @@ namespace DiegoMoyanoProject.Controllers
             {
                 if (IsNotLogued()) { return RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
                 if (LoguedUserRole() != Role.Operative) { throw new Exception("El usuario no es operativo, por lo cual no puede acceder"); }
-                await _IEmailSenderRepository.SendEmailRetirar(emailVM.Email, emailVM.Name, emailVM.CantRetirar);
+                Email mail = _mapper.Map<Email>(emailVM);
+                mail.Retire();
+                await _IEmailSenderRepository.SendEmail(mail);
                 return RedirectToAction("MailEnviado", new { enviado = true });
             }
             catch (Exception ex)
