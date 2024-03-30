@@ -11,13 +11,13 @@ namespace DiegoMoyanoProject.Repository
 
         public EmailSender()
         {
-            _email = "gonchyrobinson@hotmail.com";
-            _pass = "rickyrobinson1410";
+            _email = "rickyrobinson1410@gmail.com";
+            _pass = "jzchpaytawezqkch";
         }
 
         public async Task SendEmail(Email mail)
         {
-            using (var client = new SmtpClient("smtp-mail.outlook.com", 587))
+            using (var client = new SmtpClient("smtp.gmail.com", 587))
             {
                 client.EnableSsl = true;
                 client.UseDefaultCredentials = false;

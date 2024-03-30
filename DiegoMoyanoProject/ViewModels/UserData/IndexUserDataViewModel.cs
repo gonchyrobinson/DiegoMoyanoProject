@@ -4,12 +4,16 @@
     {
         public int UserId { get; set; } 
         public List<ImageDataViewModel> Images { get; set; }
+        public bool IsLoguedUser { get; set; }
+        public bool IsAdminOrOwner { get; set; }
         public IndexUserDataViewModel() { }
 
-        public IndexUserDataViewModel(int userId, List<ImageDataViewModel> images)
+        public IndexUserDataViewModel(int userId, List<ImageDataViewModel> images, bool isLoguedUser, bool isAdminOrOwner)
         {
-            this.UserId = userId;
-            this.Images = images;
+            UserId = userId;
+            Images = images;
+            IsLoguedUser = isLoguedUser;
+            IsAdminOrOwner = isAdminOrOwner;
         }
     }
 }
