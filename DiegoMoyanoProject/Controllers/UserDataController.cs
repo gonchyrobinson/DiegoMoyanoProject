@@ -35,7 +35,9 @@ namespace DiegoMoyanoProject.Controllers
                 if (IsAdmin() && id!=null) currentUserId = (int)id;
                 var listImages = _userDataRepository.GetUserImages(currentUserId);
                 var listImagesVm = _mapper.Map<List<ImageDataViewModel>>(listImages);
-                return View(new IndexUserDataViewModel(currentUserId, listImagesVm));
+                var isadminOrOwner = IsAdmin() || IsOwner();
+                var isloguedUser = IsOperative();
+                return View(new IndexUserDataViewModel(currentUserId, listImagesVm, isloguedUser, isadminOrOwner));
             }
             catch (Exception ex)
             {
@@ -180,6 +182,9 @@ namespace DiegoMoyanoProject.Controllers
         private bool IsAdmin()
         {
             return LoguedUserRole() == Role.Admin;
+        }private bool IsOperative()
+        {
+            return LoguedUserRole() == Role.Operative;
         }
     }
 }
