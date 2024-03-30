@@ -78,3 +78,5 @@ document.addEventListener('keydown', function (e) {
         }
     }
 });
+
+/*ADD ERROR MESSAGE WHEN PASSWORD IS INCORRECTO*/
