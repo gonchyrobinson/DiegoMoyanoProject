@@ -176,6 +176,22 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult ViewData(int id)
+        {
+            try
+            {
+                if (!HttpContext.Session.IsAvailable || HttpContext.Session.GetString("Mail") == null || (HttpContext.Session.GetString("Role") == "Operative" && HttpContext.Session.GetInt32("Id") != id)) { return RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
+                var usu = _userRepository.GetUserById(id);
+                var user = _mapper.Map<UserViewDataViewModel>(usu);
+                return View(user);
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
+        }
+
     }
 
 }

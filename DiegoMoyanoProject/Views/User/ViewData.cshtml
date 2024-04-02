@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@using DiegoMoyanoProject.ViewModels.User
+@model UserViewDataViewModel
+<div class="container py-5">
+    <!-- For demo purpose -->
+    <header class="text-center text-white">
+        <h1 class="display-4">Blue Cheetah</h1>
+        <p class="lead mb-0 font-italic"> Datos de Usuario</p>
+    </header>
+
+    <div class="row py-5">
+        <div class="col-lg-7 mx-auto">
+
+            <div class="card shadow mb-4">
+                <div class="card-body p-5">
+                    <h4 class="mb-4">@Model.Username</h4>
+                    <!-- Unstyled list -->
+                    <ul class="list-unstyled">
+                        <li class="mb-2 fw-bolder">Mail</li>
+                        <li class="mb-2">@Model.Mail</li>
+                        <li class="mb-2"><td><button type="button" class="btn btn-success"><a class="text-decoration-none text-light" asp-controller="UserData" asp-action="Index" asp-route-id="@Model.Id">Ver inversión</a></button></td></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
