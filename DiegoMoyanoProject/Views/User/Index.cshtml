@@ -77,7 +77,6 @@
                             <tr>
                                 <th>Nombre De Usuario</th>
                                 @* <th>Rol</th> *@
-                                <th>Mail</th>
                                 <th></th>
                                 <th></th>
                                 @* <th></th> *@
@@ -159,7 +158,6 @@
                                     {
                                         <td>@usu.Username</td>
                                         @* <td>@usu.Role</td> *@
-                                        <td>@usu.Mail</td>
                                         @if (Model.IsAdminOROwner)
                                         {
                                             <td>
@@ -168,12 +166,12 @@
                                                     <li><a asp-controller="User" asp-action="DeleteUser" asp-route-id="@usu.Id" data-tip="delete"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
                                                 </ul>
                                             </td>
-                                            <td><button type="button" class="btn btn-success"><a class="text-decoration-none text-light" asp-controller="UserData" asp-action="Index" asp-route-id="@usu.Id">Ver Inversion</a></button></td>
+                                            <td><button type="button" class="btn btn-success"><a class="text-decoration-none text-light" asp-controller="User" asp-action="ViewData" asp-route-id="@usu.Id">Ver datos</a></button></td>
                                         }
                                         else
                                         {
                                             <td></td>
-                                                <td><button type="button" class="btn btn-success"><a class="text-decoration-none text-light" asp-controller="UserData" asp-action="Index" asp-route-id="@usu.Id">Ver Inversion</a></button></td>
+                                                <td><button type="button" class="btn btn-success"><a class="text-decoration-none text-light" asp-controller="User" asp-action="ViewData" asp-route-id="@usu.Id">Ver datos</a></button></td>
 
                                                 @* <td><button type="button" class="btn btn-success"><a class="text-decoration-none text-light" href="Tablero/ListarTablerosPorUsuario?id=@usu.Id">ListarTableros</a></button></td> *@
                                         }
