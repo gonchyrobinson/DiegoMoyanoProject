@@ -18,7 +18,7 @@
 
                         <div class="form-floating mb-3">
                             <input hidden asp-for="@Model.ImageType">
-                            <p>Cargar imagen de @Extensions.GetDescription(Model.ImageType)</p>
+                            <p>Cargar imagen de @Model.ImageType.ToString()</p>
                         </div>
                         <div class="form-floating mb-3">
                             <input asp-for="@Model.InputFile" class="form-control" id="floatingPassword" type="file">
