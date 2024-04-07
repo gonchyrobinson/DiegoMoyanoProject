@@ -11,5 +11,6 @@ namespace DiegoMoyanoProject.Repository
         public bool UpdateUser(int id, User usu);
         public bool DeleteUser(int id);
         public string? GetMail(int? id);
+        public bool AddRentabilityandCapitalInvested(int id, User usu);
     }
 }

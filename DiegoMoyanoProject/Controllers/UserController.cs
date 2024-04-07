@@ -191,6 +191,41 @@ namespace DiegoMoyanoProject.Controllers
                 return BadRequest();
             }
         }
+        [HttpGet]
+        public IActionResult UploadData(int id)
+        {
+            try
+            {
+                if (!HttpContext.Session.IsAvailable || HttpContext.Session.GetString("Mail") == null || (HttpContext.Session.GetString("Role") == "Operative" && HttpContext.Session.GetInt32("Id") != id)) { return RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
+                var usu = _userRepository.GetUserById(id);
+                _userRepository.UpdateUser(usu.Id, usu);
+                return View(new UserUploadDataViewModel(usu));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        public IActionResult UploadData(UserUploadDataViewModel UsuVM)
+        {
+            try
+            {
+                if (!HttpContext.Session.IsAvailable || HttpContext.Session.GetString("Mail") == null || (HttpContext.Session.GetString("Role") == "Operative" && HttpContext.Session.GetInt32("Id") != UsuVM.Id)) { return RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
+                if (!ModelState.IsValid) { throw new Exception("Error en la validacion de datos"); }
+                var usu = _mapper.Map<User>(UsuVM);
+                _userRepository.AddRentabilityandCapitalInvested(UsuVM.Id, usu);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
+
+        }
 
     }
 

@@ -5,39 +5,43 @@ namespace DiegoMoyanoProject.ViewModels.User
 {
     public class UserViewDataViewModel
     {
-        public UserViewDataViewModel(string username, Role role, string pass, int id, string mail)
+        public UserViewDataViewModel(string username, Role role, int id, string mail, bool isUser)
         {
             Username = username;
             Role = role;
-            Pass = pass;
             Id = id;
             Mail = mail;
+            IsUser = isUser;
         }
         public UserViewDataViewModel()
         {
             Username = "";
             Role = Role.Operative;
-            Pass = "";
             Id = 0;
             Mail = "";
+            IsUser = false;
+
+        }
+
+        public UserViewDataViewModel(Models.User usu, bool IsOperativeUser)
+        {
+            Username = usu.Username;
+            Role = usu.Role;
+            Id = usu.Id;
+            Mail = usu.Mail;
+            IsUser = IsOperativeUser;
         }
 
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Este campo es requerido")]
         [Display(Name = "Nombre de Usuario")]
         public string Username { get; set; }
 
-        [Required(ErrorMessage = "Este campo es requerido")]
         [Display(Name = "Rol de Usuario")]
         public Role Role { get; set; }
 
-        [Required(ErrorMessage = "Este campo es requerido")]
-        [Display(Name = "Contraseña")]
-        public string Pass { get; set; }
-
-        [Required(ErrorMessage = "Este campo es requerido")]
         [Display(Name = "Correo Electronico")]
         public string Mail { get; set; }
+        public bool IsUser { get; set; }
     }
 }

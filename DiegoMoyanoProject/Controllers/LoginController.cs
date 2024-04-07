@@ -33,7 +33,7 @@ namespace DiegoMoyanoProject.Controllers
                 if (LoguedUserRole() == Role.Operative)
                 {
 
-                return RedirectToRoute(new {Controller = "UserData", Action = "Index"});
+                return RedirectToRoute(new {Controller = "UserData", Action = "ViewInversion"});
                 }
                 else
                 {

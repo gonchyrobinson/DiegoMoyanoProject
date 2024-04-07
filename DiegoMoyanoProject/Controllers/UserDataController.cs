@@ -13,12 +13,14 @@ namespace DiegoMoyanoProject.Controllers
         private readonly IUserDataRepository _userDataRepository;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ILogger<UserDataController> _logger;
+        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
 
-        public UserDataController(IUserDataRepository userDataRepository, IWebHostEnvironment webHostEnvironment, ILogger<UserDataController> logger, IMapper mapper)
+        public UserDataController(IUserDataRepository userDataRepository, IUserRepository userRepository, IWebHostEnvironment webHostEnvironment, ILogger<UserDataController> logger, IMapper mapper)
         {
             _userDataRepository = userDataRepository;
+            _userRepository = userRepository;
             _webHostEnvironment = webHostEnvironment;
             _logger = logger;
             _mapper = mapper;
@@ -65,8 +67,8 @@ namespace DiegoMoyanoProject.Controllers
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
                 var vm = new IndexOwnerUserDataViewModel();
-                vm.Sales = _userDataRepository.GetImage(ImageType.Sales,1);
-                vm.SpentMoney = _userDataRepository.GetImage(ImageType.SpentMoney,1);
+                vm.Sales = _userDataRepository.GetImage(ImageType.Sales, 1);
+                vm.SpentMoney = _userDataRepository.GetImage(ImageType.SpentMoney, 1);
                 vm.Campaigns = _userDataRepository.GetImage(ImageType.Campaigns, 1);
                 vm.Listings = _userDataRepository.GetImage(ImageType.Listings, 1);
                 return View(vm);
@@ -110,7 +112,7 @@ namespace DiegoMoyanoProject.Controllers
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                DeleteImage(order,type);
+                DeleteImage(order, type);
                 return RedirectToAction("IndexOwner");
             }
             catch (Exception ex)
@@ -123,7 +125,7 @@ namespace DiegoMoyanoProject.Controllers
         private void DeleteImage(int order, ImageType type)
         {
             var image = _userDataRepository.GetImage(type, order);
-            _userDataRepository.DeleteImage(type,order);
+            _userDataRepository.DeleteImage(type, order);
             if (image != null)
             {
                 string completePath = Path.Combine(_webHostEnvironment.WebRootPath, image.Path.Substring(1));
@@ -141,7 +143,7 @@ namespace DiegoMoyanoProject.Controllers
                 if (model.InputFile == null) return RedirectToAction("IndexOnwer");
                 DateTime todayDate = DateTime.Today;
                 var fileExtension = Path.GetExtension(model.InputFile.FileName);
-                string fileNameWithOutExtension = model.ImageType.ToString() + '_' + todayDate.ToString("ddMMyyyy")+"_"+ DateTime.Now.ToString("HHmmss");
+                string fileNameWithOutExtension = model.ImageType.ToString() + '_' + todayDate.ToString("ddMMyyyy") + "_" + DateTime.Now.ToString("HHmmss");
                 string fileName = fileNameWithOutExtension + fileExtension;
                 string rutaGuardar = Path.Combine(_webHostEnvironment.WebRootPath, "usersData", model.ImageType.ToString());
                 string networkPath = "/usersData/" + model.ImageType.ToString();
@@ -199,7 +201,7 @@ namespace DiegoMoyanoProject.Controllers
                 if (model.InputFile == null) return RedirectToAction("IndexOnwer");
                 DateTime todayDate = DateTime.Today;
                 var fileExtension = Path.GetExtension(model.InputFile.FileName);
-                string fileNameWithOutExtension = model.ImageType.ToString() + '_' + todayDate.ToString("ddMMyyyy")+"_"+DateTime.Now.ToString("HHmmss");
+                string fileNameWithOutExtension = model.ImageType.ToString() + '_' + todayDate.ToString("ddMMyyyy") + "_" + DateTime.Now.ToString("HHmmss");
                 string fileName = fileNameWithOutExtension + fileExtension;
                 string rutaGuardar = Path.Combine(_webHostEnvironment.WebRootPath, "usersData", model.ImageType.ToString());
                 string networkPath = "/usersData/" + model.ImageType.ToString();
@@ -221,6 +223,26 @@ namespace DiegoMoyanoProject.Controllers
                 return BadRequest();
             }
 
+        }
+
+        [HttpGet]
+        public IActionResult ViewInversion(int id)
+        {
+            try
+            {
+
+                if (IsNotLogued() || ((IsOwner() || IsAdmin()) && id == null)) return RedirectToAction("Index", "Login");
+                if (IsOwner() && id != null) return RedirectToAction("IndexOwner", new { id = id });
+                var currentUserId = IdLoguedUser();
+                var isLoguedUser = currentUserId == IdLoguedUser();
+                var usu = _userRepository.GetUserById(currentUserId);
+                return View(new ViewInversionViewModel(usu, isLoguedUser));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
         }
         private void DeleteImageFromLocalEnviorment(UpdateImageFormViewModel model)
         {

@@ -28,13 +28,22 @@ namespace DiegoMoyanoProject.Repository
                         Usu.Role = (Role)Convert.ToInt32(reader["role"]);
                         Usu.Pass = reader["pass"].ToString();
                         Usu.Mail = reader["mail"].ToString();
+                        if (!reader.IsDBNull(5))
+                        {
+                            Usu.CapitalInvested = Convert.ToDecimal(reader["capitalInvested"]);
+                        }
+                        if (!reader.IsDBNull(6))
+                        {
+                            Usu.Rentability = Convert.ToDecimal(reader["rentability"]);
+                        }
                         list.Add(Usu);
                     }
                 }
                 conection.Close();
             }
             return list;
-        }public List<User> ListOperativeUsers()
+        }
+        public List<User> ListOperativeUsers()
         {
             string query = $"SELECT * FROM User WHERE role = @operative";
             var list = new List<User>();
@@ -53,6 +62,14 @@ namespace DiegoMoyanoProject.Repository
                         Usu.Role = (Role)Convert.ToInt32(reader["role"]);
                         Usu.Pass = reader["pass"].ToString();
                         Usu.Mail = reader["mail"].ToString();
+                        if (!reader.IsDBNull(5))
+                        {
+                            Usu.CapitalInvested = Convert.ToDecimal(reader["capitalInvested"]);
+                        }
+                        if (!reader.IsDBNull(6))
+                        {
+                            Usu.Rentability = Convert.ToDecimal(reader["rentability"]);
+                        }
                         list.Add(Usu);
                     }
                 }
@@ -79,6 +96,14 @@ namespace DiegoMoyanoProject.Repository
                         Usu.Role = (Role)Convert.ToInt32(reader["role"]);
                         Usu.Pass = reader["pass"].ToString();
                         Usu.Mail = reader["mail"].ToString();
+                        if (!reader.IsDBNull(5))
+                        {
+                            Usu.CapitalInvested = Convert.ToDecimal(reader["capitalInvested"]);
+                        }
+                        if (!reader.IsDBNull(6))
+                        {
+                            Usu.Rentability = Convert.ToDecimal(reader["rentability"]);
+                        }
 
                     }
                 }
@@ -92,7 +117,7 @@ namespace DiegoMoyanoProject.Repository
         }
         public bool CreateUser(User usu)
         {
-            var query = $"INSERT INTO User(username, role, pass, mail) VALUES (@username, @role, @pass, @mail)";
+            var query = $"INSERT INTO User(username, role, pass, mail, rentability, capitalInvested) VALUES (@username, @role, @pass, @mail,0,0)";
             using (var conection = new SqliteConnection(conectionString))
             {
                 var command = new SqliteCommand(query, conection);
@@ -182,7 +207,30 @@ namespace DiegoMoyanoProject.Repository
                 }
             }
         }
-    }
+        public bool AddRentabilityandCapitalInvested(int id, User usu)
+        {
+            var query = $"update User SET capitalInvested=@capitalInvested, rentability = @rentability WHERE id=@id";
+            using (var conection = new SqliteConnection(conectionString))
+            {
+                var command = new SqliteCommand(query, conection);
+                command.Parameters.Add(new SqliteParameter("@id", id));
+                command.Parameters.Add(new SqliteParameter("@capitalInvested", usu.CapitalInvested));
+                command.Parameters.Add(new SqliteParameter("@rentability", usu.Rentability));
+                conection.Open();
+                var anda = command.ExecuteNonQuery();
+                conection.Close();
+                if (anda > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    throw new Exception("Error al modificar Usuario");
+                }
 
+            }
+        }
+
+    }
 }
 
