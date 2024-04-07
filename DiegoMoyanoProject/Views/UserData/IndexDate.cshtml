@@ -1,9 +1,9 @@
-﻿@model DiegoMoyanoProject.ViewModels.UserData.IndexUserDataViewModel;
+﻿@model DiegoMoyanoProject.ViewModels.UserData.IndexDateUserDataViewModel;
 
 @if (Model.Images.Count() > 0)
 {
     <div class="container text-center">
-        <h1 class="display-4">Ultimos datos cargados</h1>
+        <h1 class="display-4">Datos de Ventas por fecha</h1>
     </div>
 
     <div class="gallery container row" onclick="openLightbox(event)">
@@ -36,7 +36,7 @@
     </div>
     @if (Model.Dates.Count() > 0)
     {
-        
+
         <ul>
             @foreach (var date in Model.Dates)
             {
@@ -48,7 +48,6 @@
             }
         </ul>
     }
-
 }
 else
 {
@@ -72,4 +71,7 @@ else
     </section>
 }
 
-
+    <div class=" container row text-center d-flex justify-content-center">
+        <a class="btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder col col-sm-12 col-md-5 col-lg-5 m-2" asp-controller="Email" asp-action="Retirar">Retirar Dinero</a>
+        <a class="btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder col col-sm-12 col-md-5 col-lg-5 m-2" asp-controller="Email" asp-action="Invertir">Invertir Dinero</a>
+    </div>

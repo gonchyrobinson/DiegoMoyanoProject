@@ -1,19 +1,16 @@
 ﻿namespace DiegoMoyanoProject.ViewModels.UserData
 {
     public class IndexUserDataViewModel
-    {
-        public int UserId { get; set; } 
+    { 
         public List<ImageDataViewModel> Images { get; set; }
-        public bool IsLoguedUser { get; set; }
-        public bool IsAdminOrOwner { get; set; }
+        public List<DateTime> Dates { get; set; }   
+
         public IndexUserDataViewModel() { }
 
-        public IndexUserDataViewModel(int userId, List<ImageDataViewModel> images, bool isLoguedUser, bool isAdminOrOwner)
+        public IndexUserDataViewModel(List<ImageDataViewModel> images, List<DateTime> dates)
         {
-            UserId = userId;
             Images = images;
-            IsLoguedUser = isLoguedUser;
-            IsAdminOrOwner = isAdminOrOwner;
+            Dates = dates;
         }
     }
 }

@@ -15,24 +15,25 @@ namespace DiegoMoyanoProject.Models
     }
     public class ImageData
     {
-        private int userId;
         private string path;
         private ImageType imageType;
+        private int order;
 
         public ImageData()
         {
         }
 
-        public ImageData(int userId, string path, ImageType imageType)
+        public ImageData(string path, ImageType imageType, int order)
         {
-            this.userId = userId;
             this.path = path;
             this.imageType = imageType;
+            this.order = order;
         }
 
-        public int UserId { get => userId; set => userId = value; }
         public string Path { get => path; set => path = value; }
         public ImageType ImageType { get => imageType; set => imageType = value; }
+        public int Order { get => order; set => order = value; }
+
         public string GetImageTypeDescription()
         {
             var field = imageType.GetType().GetField(imageType.ToString());

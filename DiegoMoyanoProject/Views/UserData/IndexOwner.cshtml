@@ -19,14 +19,19 @@
         }
         <h5 class="text-primary font-weight-bold">Ventas</h5>
         <ul class="action-list list-unstyled list-inline">
-            <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.Sales" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
             @if (Model.Sales != null)
             {
-
-                <li><a asp-controller="UserData" asp-action="Delete" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.Sales" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-type="@ImageType.Sales" data-tip="edit" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserData" asp-action="UpdateImageForm" asp-route-type="@ImageType.Sales" asp-route-order="@Model.Sales.Order" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserData" asp-action="Delete" asp-route-type="@ImageType.Sales" asp-route-order="@Model.Sales.Order" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+            }
+            else
+            {
+                <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-type="@ImageType.Sales" data-tip="edit" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
             }
         </ul>
     </div>
+
     <div class="container text-center col-lg-4 col-md-6 col-sm-12">
         @if (Model.Campaigns != null)
         {
@@ -41,11 +46,16 @@
         }
         <h5 class="text-primary font-weight-bold">Campañas</h5>
         <ul class="action-list list-unstyled list-inline">
-            <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.Campaigns" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
             @if (Model.Campaigns != null)
             {
 
-                <li><a asp-controller="UserData" asp-action="Delete" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.Campaigns" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserData" asp-action="UploadImageForm"  asp-route-type="@ImageType.Campaigns" data-tip="add" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserData" asp-action="UpdateImageForm" asp-route-order="@Model.Campaigns.Order" asp-route-type="@ImageType.Campaigns" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserData" asp-action="Delete" asp-route-order="@Model.Campaigns.Order" asp-route-type="@ImageType.Campaigns" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+            }
+            else
+            {
+                <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-type="@ImageType.Campaigns" data-tip="add" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
             }
         </ul>
     </div>
@@ -63,11 +73,17 @@
         }
         <h5 class="text-primary font-weight-bold">Dinero Invertido</h5>
         <ul class="action-list list-unstyled list-inline">
-            <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.SpentMoney" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
             @if (Model.SpentMoney != null)
             {
 
-                <li><a asp-controller="UserData" asp-action="Delete" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.SpentMoney" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserData" asp-action="UploadImageForm"  asp-route-type="@ImageType.SpentMoney" data-tip="add" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserData" asp-action="UpdateImageForm" asp-route-order="@Model.SpentMoney.Order" asp-route-type="@ImageType.SpentMoney" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserData" asp-action="Delete" asp-route-order="@Model.SpentMoney.Order" asp-route-type="@ImageType.SpentMoney" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+            }
+            else
+            {
+                <li><a asp-controller="UserData" asp-action="UploadImageForm"  asp-route-type="@ImageType.SpentMoney" data-tip="edit" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
+
             }
         </ul>
     </div>
@@ -85,11 +101,15 @@
         }
         <h5 class="text-primary font-weight-bold">Articulos de venta</h5>
         <ul class="action-list list-unstyled list-inline">
-            <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.Listings" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
             @if (Model.Listings != null)
             {
-
-                <li><a asp-controller="UserData" asp-action="Delete" asp-route-userId="@Model.UserId" asp-route-type="@ImageType.Listings" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserData" asp-action="UploadImageForm"  asp-route-type="@ImageType.Listings" data-tip="add" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserData" asp-action="UpdateImageForm" asp-route-order="@Model.Listings.Order" asp-route-type="@ImageType.Listings" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserData" asp-action="Delete" asp-route-order="@Model.Listings.Order" asp-route-type="@ImageType.Listings" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+            }
+            else
+            {
+                <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-type="@ImageType.Listings" data-tip="edit" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
             }
         </ul>
     </div>
@@ -98,7 +118,6 @@
 
 <!-- Lightbox container -->
 <div id="lightbox">
-    <!-- Close button -->
     <span id="close-btn" onclick="closeLightbox()">&times;</span>
 
     <!-- Main lightbox image -->

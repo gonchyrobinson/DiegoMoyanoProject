@@ -28,6 +28,8 @@ namespace DiegoMoyanoProject.Mapper
 
             CreateMap<ImageData, UploadImageFormViewModel>().
              ReverseMap();
+            CreateMap<ImageData, UpdateImageFormViewModel>().
+             ReverseMap();
 
             CreateMap<Email, InvertirEmailViewModel>().
                 ReverseMap();

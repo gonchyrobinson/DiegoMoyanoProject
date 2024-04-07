@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DiegoMoyanoProject.ViewModels.UserData
 {
-    public class UploadImageFormViewModel
+    public class UpdateImageFormViewModel
     {
 
         [Required]
@@ -11,14 +11,15 @@ namespace DiegoMoyanoProject.ViewModels.UserData
         public ImageType ImageType { get; set; }
         [Display(Name = "Imagen")]
         public IFormFile? InputFile { get; set; }
-
-        public UploadImageFormViewModel()
+        public int Order { get; set; }
+        public UpdateImageFormViewModel()
         {
         }
 
-        public UploadImageFormViewModel(ImageType imageType)
+        public UpdateImageFormViewModel(ImageType imageType, int order)
         {
             ImageType = imageType;
+            this.Order = order; 
         }
     }
 }

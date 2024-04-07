@@ -24,8 +24,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\img\UserData\" />
-    <Folder Include="wwwroot\usersData\1\" />
-    <Folder Include="wwwroot\usersData\2\" />
+    <Folder Include="wwwroot\usersData\" />
   </ItemGroup>
 
 </Project>

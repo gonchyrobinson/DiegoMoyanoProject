@@ -3,14 +3,8 @@
 namespace DiegoMoyanoProject.ViewModels.UserData
 {
     public class IndexOwnerUserDataViewModel
-    {
-        public int UserId { get; set;}
-
-        public IndexOwnerUserDataViewModel(int userId)
-        {
-            UserId = userId;
-        }
-
+    { 
+        public List<DateTime> Dates {  get; set; }
         public ImageData? Sales {  get; set; }
         public ImageData? SpentMoney { get; set; }  
         public ImageData? Campaigns { get; set; }
