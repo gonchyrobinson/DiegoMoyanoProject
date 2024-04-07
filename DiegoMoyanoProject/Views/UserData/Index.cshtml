@@ -36,17 +36,18 @@
     </div>
     @if (Model.Dates.Count() > 0)
     {
-        
-        <ul>
-            @foreach (var date in Model.Dates)
-            {
-                <li>
-                    <a asp-controller="UserData" asp-action="IndexDate" asp-route-date="@date.ToString("yyyy-MM-dd")">
-                        @date.ToString("yyyy-MM-dd")
-                    </a>
-                </li>
-            }
-        </ul>
+        <div class="container text-center">
+            <ul class="list-group list-unstyled d-flex flex-row flex-wrap justify-content-center">
+                @foreach (var date in Model.Dates)
+                {
+                    <li class="border m-2 border-primary rounded">
+                        <a asp-controller="UserData" asp-action="IndexDate" asp-route-date="@date.ToString("yyyy-MM-dd")" class="text-decoration-none list-group-item btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder">
+                            @date.ToString("yyyy-MM-dd")
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
     }
 
 }
