@@ -23,13 +23,15 @@ namespace DiegoMoyanoProject.Models
         }
         public void Invest()
         {
-            this.subject = "Mail Automatico invertir dinero";
-            this.body = $"NOMBRE: {this.name}\n  CANTIDAD A INVERTIR: {this.money} \n";
+            this.subject = "Inversion solicitada";
+            this.body = $"Su solicitud de inversion ya ha sido presentada. Cuando sea aprobada su inversión se actualizará en la página\n" +
+                $"NOMBRE: {this.name}\n  CANTIDAD A INVERTIR: {this.money} \n";
         }
         public void Retire()
         {
-            this.subject = "Mail Automatico retirar dinero";
-            this.body = $"NOMBRE: {this.name}\n  CANTIDAD A Retirar: {this.money} \n";
+            this.subject = "Solicitud de retiro de dinero realizada";
+            this.body = $"Su solicitud de retiro de dinero ha sido presentada. Cuando sea aprobada se actualizará su información en la pagina\n" +
+                $"NOMBRE: {this.name}\n  CANTIDAD A Retirar: {this.money} \n";
         }
         public string Mail { get => mail; set => mail = value; }
         public string Name { get => name; set => name = value; }

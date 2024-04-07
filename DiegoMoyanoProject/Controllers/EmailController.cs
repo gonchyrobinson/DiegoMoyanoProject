@@ -34,14 +34,14 @@ namespace DiegoMoyanoProject.Controllers
         }
 
         [HttpGet]
-        public IActionResult Invertir()
+        public IActionResult Invertir(decimal CapitalInvested)
         {
             try
             {
                 if (IsNotLogued()) { return RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
                 if (LoguedUserRole() != Role.Operative) { throw new Exception("El usuario no es operativo, por lo cual no puede acceder"); }
                 var usu = _IUserRepository.GetUserById(IdLoguedUser());
-                return View(new InvertirEmailViewModel(usu.Username, usu.Mail));
+                return View(new InvertirEmailViewModel(usu.Username, usu.Mail,CapitalInvested));
             }
             catch (Exception ex)
             {
@@ -68,14 +68,14 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
         [HttpGet]
-        public IActionResult Retirar()
+        public IActionResult Retirar(decimal CapitalInvested)
         {
             try
             {
                 if (IsNotLogued()) { return RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
                 if (LoguedUserRole() != Role.Operative) { throw new Exception("El usuario no es operativo, por lo cual no puede acceder"); }
                 var usu = _IUserRepository.GetUserById(IdLoguedUser());
-                return View(new RetirarEmailViewModel(usu.Username, usu.Mail));
+                return View(new RetirarEmailViewModel(usu.Username, usu.Mail,CapitalInvested));
             }
             catch (Exception ex)
             {

@@ -16,12 +16,14 @@ namespace DiegoMoyanoProject.ViewModels.Mail
             Name = "";
             Mail = "";
             Money = 0;
+            CapitalInvested = 0;
         }
-        public InvertirEmailViewModel(string name, string mail)
+        public InvertirEmailViewModel(string name, string mail, decimal capitalInvested)
         {
             Name = name;
             Mail = mail;
             Money = 0;
+            CapitalInvested = capitalInvested;
         }
 
 
@@ -32,6 +34,7 @@ namespace DiegoMoyanoProject.ViewModels.Mail
         [Display(Name = "Cantidad a invertir")]
         [Required(ErrorMessage = "Por favor ingrese una cantidad válida")]
         public int Money { get; set; }
+        public decimal CapitalInvested { get; set; }
  
     }
 }

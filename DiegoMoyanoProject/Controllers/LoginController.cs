@@ -33,7 +33,7 @@ namespace DiegoMoyanoProject.Controllers
                 if (LoguedUserRole() == Role.Operative)
                 {
 
-                return RedirectToRoute(new {Controller = "UserData", Action = "ViewInversion"});
+                return RedirectToRoute(new {Controller = "User", Action = "ViewData", id=IdLoguedUser()});
                 }
                 else
                 {
@@ -74,6 +74,10 @@ namespace DiegoMoyanoProject.Controllers
         private Role LoguedUserRole()
         {
             return (Role)HttpContext.Session.GetInt32("Role");
+        }
+        private int? IdLoguedUser()
+        {
+            return HttpContext.Session.GetInt32("Id");
         }
     }
 }

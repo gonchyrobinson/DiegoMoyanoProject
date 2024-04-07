@@ -183,7 +183,9 @@ namespace DiegoMoyanoProject.Controllers
             {
                 if (!HttpContext.Session.IsAvailable || HttpContext.Session.GetString("Mail") == null || (HttpContext.Session.GetString("Role") == "Operative" && HttpContext.Session.GetInt32("Id") != id)) { return RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
                 var usu = _userRepository.GetUserById(id);
-                var user = _mapper.Map<UserViewDataViewModel>(usu);
+                bool isOperativeOrUser = IdLoguedUser() == id && usu.Role == Role.Operative;
+                bool isAdminOrOwner =(Role) HttpContext.Session.GetInt32("Role") == Role.Admin || (Role)HttpContext.Session.GetInt32("Role") == Role.Owner;          
+                var user = new UserViewDataViewModel(usu, isOperativeOrUser, isAdminOrOwner);
                 return View(user);
             }catch(Exception ex)
             {

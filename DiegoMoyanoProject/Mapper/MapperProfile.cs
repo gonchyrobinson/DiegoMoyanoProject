@@ -38,6 +38,8 @@ namespace DiegoMoyanoProject.Mapper
                 ReverseMap();
             CreateMap<User, ViewInversionViewModel>().
                 ReverseMap();
+            CreateMap<User, UserUploadDataViewModel>().
+                ReverseMap();
         }
     }
 }
