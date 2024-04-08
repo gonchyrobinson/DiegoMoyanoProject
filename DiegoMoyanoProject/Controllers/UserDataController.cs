@@ -125,9 +125,10 @@ namespace DiegoMoyanoProject.Controllers
         private void DeleteImage(int order, ImageType type)
         {
             var image = _userDataRepository.GetImage(type, order);
-            _userDataRepository.DeleteImage(type, order);
             if (image != null)
             {
+                _userDataRepository.DeleteImage(type, order);
+                _userDataRepository.ReduceOrder(type);
                 string completePath = Path.Combine(_webHostEnvironment.WebRootPath, image.Path.Substring(1));
                 System.IO.File.Delete(completePath);
             }

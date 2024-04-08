@@ -23,6 +23,7 @@ builder.Services.AddSingleton<string>(CadenaDeConexion);
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserDataRepository, UserDataRepository>();
+builder.Services.AddScoped<IUserPdfRepository, UserPdfRepository>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 var app = builder.Build();
 

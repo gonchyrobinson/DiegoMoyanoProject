@@ -4,6 +4,7 @@ using DiegoMoyanoProject.ViewModels.Login;
 using DiegoMoyanoProject.ViewModels.Mail;
 using DiegoMoyanoProject.ViewModels.User;
 using DiegoMoyanoProject.ViewModels.UserData;
+using DiegoMoyanoProject.ViewModels.UserPdf;
 
 namespace DiegoMoyanoProject.Mapper
 {
@@ -37,8 +38,6 @@ namespace DiegoMoyanoProject.Mapper
             CreateMap<Email, RetirarEmailViewModel>().
                 ReverseMap();
             CreateMap<User, ViewInversionViewModel>().
-                ReverseMap();
-            CreateMap<User, UserUploadDataViewModel>().
                 ReverseMap();
         }
     }

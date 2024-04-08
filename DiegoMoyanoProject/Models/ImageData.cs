@@ -7,7 +7,7 @@ namespace DiegoMoyanoProject.Models
         [Description("Ventas")]
         Sales = 0,
         [Description("Dinero Invertido")]
-        SpentMoney =1,
+        SpentMoney = 1,
         [Description("Campañas")]
         Campaigns = 2,
         [Description("Articulos de Venta")]
