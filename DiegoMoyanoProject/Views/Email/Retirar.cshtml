@@ -14,9 +14,9 @@
                         <div class="col-md-4 col-10 pt-2">
                             <img class="mt-2 ms-2 img-fluid rounded" style="max-width:230px" src="~/img/Home/LogoBlueCheetah.jpeg" alt="Blue Cheetah">
                         </div>
-
+                        <p class="display-7 fw-bolder mb-5 text-center"> Capital Disponible: $@Model.CapitalInvested</p>
                         <div class="form-floating mb-3">
-                            <input asp-for="@Model.Money" type="number" class="form-control" id="floatingInput">
+                            <input asp-for="@Model.Money" type="number" class="form-control" id="floatingInput" max="@Model.CapitalInvested">
                             <label for="floatingInput" asp-for="@Model.Money"></label>
                             <span asp-validation-for="@Model.Money" class="mt-1 text-danger"></span>
                         </div>

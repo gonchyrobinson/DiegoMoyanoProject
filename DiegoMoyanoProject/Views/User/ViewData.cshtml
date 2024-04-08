@@ -20,11 +20,14 @@
                     <ul class="list-unstyled">
                         <li class="mb-2 fw-bolder">Mail</li>
                         <li class="mb-2">@Model.Mail</li>
-                        <li class="mb-2"><td><button type="button" class="btn btn-success"><a class="text-decora  tion-none text-light" asp-controller="UserData" asp-action="Index" asp-route-id="@Model.Id">Ver inversión</a></button></td></li>
-                        @if (@Model.IsUser)
+                        <li class="mb-2"><td><button type="button" class="btn btn-success"><a class="text-decora  tion-none text-light" asp-controller="UserData" asp-action="Index" asp-route-id="@Model.Id">Ver datos generales de la inversión</a></button></td></li>
+                        @if (@Model.IsAdminOrOwner)
                         {
-                            <li class="mb-2"><td><button type="button" class="btn btn-success"><a class="text-decora  tion-none text-light" asp-controller="User" asp-action="UploadData" asp-route-id="@Model.Id">Cargar Datos</a></button></td></li>
+                            <li class="mb-2"><td><button type="button" class="btn btn-success"><a class="text-decora  tion-none text-light" asp-controller="User" asp-action="UploadData" asp-route-id="@Model.Id">Registrar capital y rentabilidad</a></button></td></li>
                         }
+                            <li class="mb-2"><td><button type="button" class="btn btn-success"><a class="text-decora  tion-none text-light" asp-controller="UserData" asp-action="ViewInversion" asp-route-id="@Model.Id">Capital y Rentabilidad</a></button></td></li>
+              
+
                     </ul>
                 </div>
             </div>

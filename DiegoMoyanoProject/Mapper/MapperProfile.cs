@@ -39,8 +39,6 @@ namespace DiegoMoyanoProject.Mapper
                 ReverseMap();
             CreateMap<User, ViewInversionViewModel>().
                 ReverseMap();
-            CreateMap<PdfData,IndexOwnerUserPdfViewModel>().
-                ReverseMap();
         }
     }
 }
