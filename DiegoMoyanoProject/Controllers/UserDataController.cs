@@ -235,12 +235,31 @@ namespace DiegoMoyanoProject.Controllers
                 if (IsOwner() && id != null) return RedirectToAction("IndexOwner", new { id = id });
                 var currentUserId = IdLoguedUser();
                 var isLoguedUser = currentUserId == IdLoguedUser();
-                var usu = _userRepository.GetUserById(currentUserId);
+                var usu = _userRepository.GetUserById(id);
                 return View(new ViewInversionViewModel(usu, isLoguedUser));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+                return BadRequest();
+            }
+        }
+
+        public IActionResult RedirectionOfCapitalAndRentability()
+        {
+            try
+            {
+                if(IsOperative())
+                {
+                    return RedirectToAction("ViewInversion", new { id = IdLoguedUser() });
+                }
+                else
+                {
+                    return RedirectToRoute(new{ Controller="User",action="Index"});
+                }
+            }catch(Exception e)
+            {
+                _logger.LogError(e.Message);
                 return BadRequest();
             }
         }

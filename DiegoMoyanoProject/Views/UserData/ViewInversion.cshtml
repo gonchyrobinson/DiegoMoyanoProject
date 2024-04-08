@@ -49,8 +49,8 @@
         @if (Model.IsLoguedUser && !Model.IsAdminOrOwner)
         {
             <div class=" container row text-center d-flex justify-content-center">
-                <a class="btn btn-outline-primary bg-light btn-lg px-5 py-3 fs-6 fw-bolder col col-sm-12 col-md-5 col-lg-5 m-2" asp-controller="Email" asp-action="Retirar" asp-route-CapitalInvested="@Model.CapitalInvested">Retirar Dinero</a>
-                <a class="btn btn-outline-primary bg-light btn-lg px-5 py-3 fs-6 fw-bolder col col-sm-12 col-md-5 col-lg-5 m-2" asp-controller="Email" asp-action="Invertir" asp-route-CapitalInvested="@Model.CapitalInvested"> Invertir Dinero</a>
+                <a class="btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder col col-sm-12 col-md-5 col-lg-5 m-2" asp-controller="Email" asp-action="Retirar" asp-route-CapitalInvested="@Model.CapitalInvested">Retirar Dinero</a>
+                <a class="btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder col col-sm-12 col-md-5 col-lg-5 m-2" asp-controller="Email" asp-action="Invertir" asp-route-CapitalInvested="@Model.CapitalInvested"> Invertir Dinero</a>
             </div>
         }
     </div>
