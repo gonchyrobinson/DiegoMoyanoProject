@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\img\UserPdf\" />
     <Folder Include="wwwroot\img\UserData\" />
     <Folder Include="wwwroot\usersData\" />
   </ItemGroup>

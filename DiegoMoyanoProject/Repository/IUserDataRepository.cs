@@ -16,9 +16,7 @@ namespace DiegoMoyanoProject.Repository
         public List<DateTime> GetAllDates();
         public int? MaxOrder(ImageType type);
         public bool AddOrder(ImageType type);
+        public bool ReduceOrder(ImageType type);
         public bool DeleteImage(ImageType type, int order);
-
-
-
     }
 }

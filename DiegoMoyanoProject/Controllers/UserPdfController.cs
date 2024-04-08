@@ -4,22 +4,23 @@ using DiegoMoyanoProject.Exceptions;
 using DiegoMoyanoProject.Models;
 using AutoMapper;
 using DiegoMoyanoProject.ViewModels.UserData;
-using System.IO;
+using DiegoMoyanoProject.ViewModels.UserPdf;
+using Microsoft.Extensions.Hosting;
 
 namespace DiegoMoyanoProject.Controllers
 {
-    public class UserDataController : Controller
+    public class UserPdfController : Controller
     {
-        private readonly IUserDataRepository _userDataRepository;
+        private readonly IUserPdfRepository _userPdfRepoository;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly ILogger<UserDataController> _logger;
+        private readonly ILogger<UserPdfController> _logger;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
 
-        public UserDataController(IUserDataRepository userDataRepository, IUserRepository userRepository, IWebHostEnvironment webHostEnvironment, ILogger<UserDataController> logger, IMapper mapper)
+        public UserPdfController(IUserPdfRepository userPdfRepository, IUserRepository userRepository, IWebHostEnvironment webHostEnvironment, ILogger<UserPdfController> logger, IMapper mapper)
         {
-            _userDataRepository = userDataRepository;
+            _userPdfRepoository = userPdfRepository;
             _userRepository = userRepository;
             _webHostEnvironment = webHostEnvironment;
             _logger = logger;
@@ -32,10 +33,10 @@ namespace DiegoMoyanoProject.Controllers
             {
                 if (IsNotLogued()) return RedirectToAction("Index", "Login");
                 if (IsOwner()) return RedirectToAction("IndexOwner");
-                var listImages = _userDataRepository.GetUserImages();
-                var listImagesVm = _mapper.Map<List<ImageDataViewModel>>(listImages);
-                var listDates = _userDataRepository.GetAllDates();
-                return View(new IndexUserDataViewModel(listImagesVm, listDates));
+                int order = 1;
+                var pdfNetworkPath = _userPdfRepoository.PdfPath(order);
+                var listDates = _userPdfRepoository.GetAllDates();
+                return View(new IndexUserPdfViewModel(pdfNetworkPath, listDates));
             }
             catch (Exception ex)
             {
@@ -48,11 +49,9 @@ namespace DiegoMoyanoProject.Controllers
             try
             {
                 if (IsNotLogued()) return RedirectToAction("Index", "Login");
-                if (!ModelState.IsValid) throw (new ModelStateInvalidException());
-                var listImages = _userDataRepository.GetUserImages(date);
-                var listImagesVm = _mapper.Map<List<ImageDataViewModel>>(listImages);
-                var listDates = _userDataRepository.GetAllDates();
-                return View(new IndexDateUserDataViewModel(listImagesVm, listDates));
+                var pdfNetworkPath = _userPdfRepoository.PdfPath(date);
+                var listDates = _userPdfRepoository.GetAllDates();
+                return View(new IndexDateUserPdfViewModel(pdfNetworkPath, listDates));
             }
             catch (Exception ex)
             {
@@ -66,12 +65,9 @@ namespace DiegoMoyanoProject.Controllers
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                var vm = new IndexOwnerUserDataViewModel();
-                vm.Sales = _userDataRepository.GetImage(ImageType.Sales, 1);
-                vm.SpentMoney = _userDataRepository.GetImage(ImageType.SpentMoney, 1);
-                vm.Campaigns = _userDataRepository.GetImage(ImageType.Campaigns, 1);
-                vm.Listings = _userDataRepository.GetImage(ImageType.Listings, 1);
-                return View(vm);
+                int order = 1;
+                var pdf = _userPdfRepoository.GetPdf(order);
+                return View(new IndexOwnerUserPdfViewModel(pdf));
             }
             catch (Exception ex)
             {
@@ -80,12 +76,12 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
         [HttpGet]
-        public IActionResult UploadImageForm(ImageType type)
+        public IActionResult UploadPdfForm()
         {
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                return View(new UploadImageFormViewModel(type));
+                return View(new UploadPdfFormViewModel());
             }
             catch (Exception ex)
             {
@@ -94,12 +90,12 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
         [HttpGet]
-        public IActionResult UpdateImageForm(ImageType type, int order)
+        public IActionResult UpdatePdfForm(int order)
         {
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                return View(new UpdateImageFormViewModel(type, order));
+                return View(new UpdatePdfFormViewModel(order));
             }
             catch (Exception ex)
             {
@@ -107,12 +103,12 @@ namespace DiegoMoyanoProject.Controllers
                 return BadRequest();
             }
         }
-        public IActionResult Delete(int order, ImageType type)
+        public IActionResult Delete(int order)
         {
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                DeleteImage(order, type);
+                DeletePdf(order);
                 return RedirectToAction("IndexOwner");
             }
             catch (Exception ex)
@@ -122,20 +118,19 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
 
-        private void DeleteImage(int order, ImageType type)
+        private void DeletePdf(int order)
         {
-            var image = _userDataRepository.GetImage(type, order);
-            if (image != null)
+            var pdf = _userPdfRepoository.GetPdf(order);
+            if (pdf != null)
             {
-                _userDataRepository.DeleteImage(type, order);
-                _userDataRepository.ReduceOrder(type);
-                string completePath = Path.Combine(_webHostEnvironment.WebRootPath, image.Path.Substring(1));
-                System.IO.File.Delete(completePath);
+                _userPdfRepoository.DeletePdf(order);
+                _userPdfRepoository.ReduceOrder();
+                System.IO.File.Delete(pdf.Path);
             }
         }
 
         [HttpPost]
-        public IActionResult Upload(UploadImageFormViewModel model)
+        public IActionResult Upload(UploadPdfFormViewModel model)
         {
             try
             {
@@ -144,15 +139,13 @@ namespace DiegoMoyanoProject.Controllers
                 if (model.InputFile == null) return RedirectToAction("IndexOnwer");
                 DateTime todayDate = DateTime.Today;
                 var fileExtension = Path.GetExtension(model.InputFile.FileName);
-                string fileNameWithOutExtension = model.ImageType.ToString() + '_' + todayDate.ToString("ddMMyyyy") + "_" + DateTime.Now.ToString("HHmmss");
+                string fileNameWithOutExtension = "Report" + '_' + todayDate.ToString("ddMMyyyy") + "_" + DateTime.Now.ToString("HHmmss");
                 string fileName = fileNameWithOutExtension + fileExtension;
-                string rutaGuardar = Path.Combine(_webHostEnvironment.WebRootPath, "usersData", model.ImageType.ToString());
-                string networkPath = "/usersData/" + model.ImageType.ToString();
+                string rutaGuardar = Path.Combine(_webHostEnvironment.WebRootPath, "userPdf");
                 if (!Directory.Exists(rutaGuardar)) Directory.CreateDirectory(rutaGuardar);
                 string filePath = Path.Combine(rutaGuardar, fileName);
-                string fileNetworkPath = networkPath + "/" + fileName;
-                DeleteFilesOfLastOrder(model, fileNameWithOutExtension, rutaGuardar);
-                SaveImageInCreatedFolderAndUploadInDB(model, filePath, fileNetworkPath);
+                DeleteFilesOfLastOrder();
+                SaveImageInCreatedFolderAndUploadInDB(model, filePath);
                 return RedirectToAction("IndexOwner");
             }
             catch (InconsistenceInTheDBException ex)
@@ -167,33 +160,32 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
 
-        private void SaveImageInCreatedFolderAndUploadInDB(UploadImageFormViewModel model, string filePath, string fileNetworkPath)
+        private void SaveImageInCreatedFolderAndUploadInDB(UploadPdfFormViewModel model, string filePath)
         {
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 model.InputFile.CopyTo(stream);
-                ImageData userData = _mapper.Map<ImageData>(model);
-                userData.Order = 1;
-                userData.Path = fileNetworkPath;
+                int order = 1;
+                PdfData pdfData = new PdfData(filePath, order);
                 //I add an order, because, the inserted image, now should be at order 1
-                _userDataRepository.AddOrder(model.ImageType);
-                _userDataRepository.UploadImage(userData);
+                _userPdfRepoository.AddOrder();
+                _userPdfRepoository.UploadPdf(pdfData);
             }
         }
 
-        private void DeleteFilesOfLastOrder(UploadImageFormViewModel model, string fileNameWithOutExtension, string rutaGuardar)
+        private void DeleteFilesOfLastOrder()
         {
-            var deleteImage = _userDataRepository.GetImage(model.ImageType, 3);
-            if (deleteImage != null)
+            int order = 3;
+            var deletePdf = _userPdfRepoository.GetPdf(order);
+            if (deletePdf != null)
             {
                 //Save the path like this, to delete inicial / in the path
-                System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, deleteImage.Path.Substring(1)));
-                _userDataRepository.DeleteImage(model.ImageType, 3);
-
+                System.IO.File.Delete(deletePdf.Path);
+                _userPdfRepoository.DeletePdf(order);
             }
         }
         [HttpPost]
-        public IActionResult Update(UpdateImageFormViewModel model)
+        public IActionResult Update(UpdatePdfFormViewModel model)
         {
             try
             {
@@ -202,15 +194,13 @@ namespace DiegoMoyanoProject.Controllers
                 if (model.InputFile == null) return RedirectToAction("IndexOnwer");
                 DateTime todayDate = DateTime.Today;
                 var fileExtension = Path.GetExtension(model.InputFile.FileName);
-                string fileNameWithOutExtension = model.ImageType.ToString() + '_' + todayDate.ToString("ddMMyyyy") + "_" + DateTime.Now.ToString("HHmmss");
+                string fileNameWithOutExtension = "Report" + '_' + todayDate.ToString("ddMMyyyy") + "_" + DateTime.Now.ToString("HHmmss");
                 string fileName = fileNameWithOutExtension + fileExtension;
-                string rutaGuardar = Path.Combine(_webHostEnvironment.WebRootPath, "usersData", model.ImageType.ToString());
-                string networkPath = "/usersData/" + model.ImageType.ToString();
+                string rutaGuardar = Path.Combine(_webHostEnvironment.WebRootPath, "userPdf");
                 if (!Directory.Exists(rutaGuardar)) Directory.CreateDirectory(rutaGuardar);
                 string filePath = Path.Combine(rutaGuardar, fileName);
-                string fileNetworkPath = networkPath + "/" + fileName;
                 DeleteImageFromLocalEnviorment(model);
-                SaveImageInCreatedFolderAnUpdateInDB(model, filePath, fileNetworkPath);
+                SaveImageInCreatedFolderAnUpdateInDB(model, filePath);
                 return RedirectToAction("IndexOwner");
             }
             catch (InconsistenceInTheDBException ex)
@@ -226,32 +216,13 @@ namespace DiegoMoyanoProject.Controllers
 
         }
 
-        [HttpGet]
-        public IActionResult ViewInversion(int id)
-        {
-            try
-            {
 
-                if (IsNotLogued() || ((IsOwner() || IsAdmin()) && id == null)) return RedirectToAction("Index", "Login");
-                if (IsOwner() && id != null) return RedirectToAction("IndexOwner", new { id = id });
-                var currentUserId = IdLoguedUser();
-                var isLoguedUser = currentUserId == IdLoguedUser();
-                var usu = _userRepository.GetUserById(currentUserId);
-                return View(new ViewInversionViewModel(usu, isLoguedUser));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return BadRequest();
-            }
-        }
-        private void DeleteImageFromLocalEnviorment(UpdateImageFormViewModel model)
+        private void DeleteImageFromLocalEnviorment(UpdatePdfFormViewModel model)
         {
-            var deleteImage = _userDataRepository.GetImage(model.ImageType, model.Order);
-            if (deleteImage != null)
+            var deletePdf = _userPdfRepoository.GetPdf(model.Order);
+            if (deletePdf != null)
             {
-
-                System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, deleteImage.Path.Substring(1)));
+                System.IO.File.Delete(deletePdf.Path);
             }
             else
             {
@@ -259,17 +230,24 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
 
-        private void SaveImageInCreatedFolderAnUpdateInDB(UpdateImageFormViewModel model, string filePath, string fileNetworkPath)
+        private void SaveImageInCreatedFolderAnUpdateInDB(UpdatePdfFormViewModel model, string filePath)
         {
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 model.InputFile.CopyTo(stream);
-                ImageData userData = _mapper.Map<ImageData>(model);
-                userData.Path = fileNetworkPath;
-                _userDataRepository.UpdateImage(userData, model.Order);
+                PdfData pdfData = new PdfData(filePath, model.Order);
+                _userPdfRepoository.UpdatePdf(pdfData, model.Order);
             }
         }
-
+        public FileResult OnGetDownloadFileFromFolder(string path)
+        {
+            
+            //Read the File data into Byte Array.  
+            byte[] bytes = System.IO.File.ReadAllBytes(path);
+            //Send the File to Download.  
+            var partPath = path.Split(@"\");
+            return File(bytes, "application/octet-stream", partPath[partPath.Length-1] );
+        }
         private int IdLoguedUser()
         {
             return (int)HttpContext.Session.GetInt32("Id");

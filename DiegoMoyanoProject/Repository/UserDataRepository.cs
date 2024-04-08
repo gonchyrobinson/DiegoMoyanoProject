@@ -233,6 +233,20 @@ namespace DiegoMoyanoProject.Repository
                 connection.Close();
             }
             return updated;
+        } 
+        public bool ReduceOrder(ImageType type)
+        {
+            var queryString = "UPDATE UserImage SET `order` = `order`-1 WHERE type = @type AND `order` > 1";
+            bool updated = false;
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                var command = new SqliteCommand(queryString, connection);
+                command.Parameters.Add(new SqliteParameter("@type", type));
+                connection.Open();
+                updated = command.ExecuteNonQuery() > 0;
+                connection.Close();
+            }
+            return updated;
         }
         public bool DeleteImage(ImageType type, int order)
         {
