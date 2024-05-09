@@ -6,12 +6,14 @@ namespace DiegoMoyanoProject.Models
     {
         [Description("Ventas")]
         Sales = 0,
-        [Description("Dinero Invertido")]
+        [Description("Total Ventas en el Año")]
         SpentMoney = 1,
-        [Description("Campañas")]
+        [Description("Gasto en Campañas Publicitarias")]
         Campaigns = 2,
-        [Description("Articulos de Venta")]
-        Listings = 3
+        [Description("Productos Activos y en Venta")]
+        Listings = 3,
+        [Description("Gasto en Campañas Publicitarias en el Año")]
+        TotalCampaigns = 4
     }
     public class ImageData
     {

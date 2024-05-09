@@ -26,7 +26,8 @@ namespace DiegoMoyanoProject.Repository
                 connection.Close();
             }
             return path;
-        } public string? PdfPath(DateTime date)
+        } 
+        public string? PdfPath(DateTime date)
         {
             string queryString = "SELECT path from UserPdf WHERE date =@date";
             string? path = null;

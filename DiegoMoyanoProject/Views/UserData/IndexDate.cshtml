@@ -3,7 +3,7 @@
 @if (Model.Images.Count() > 0)
 {
     <div class="container text-center">
-        <h1 class="display-4">Datos de Ventas por fecha</h1>
+        <h1 class="display-4">Datos de Ventas en @Model.SelectedDate</h1>
     </div>
 
     <div class="gallery container row" onclick="openLightbox(event)">
@@ -36,7 +36,7 @@
     </div>
     @if (Model.Dates.Count() > 0)
     {
-        <div class="container text-center">
+        <div class="container text-center" id="dates-container">
             <ul class="list-group list-unstyled d-flex flex-row flex-wrap justify-content-center">
                 @foreach (var date in Model.Dates)
                 {

@@ -8,7 +8,8 @@
     <div class="container text-center col-lg-4 col-md-6 col-sm-12">
         @if (Model.PdfData != null)
         {
-            <a download asp-controller="UserPdf" asp-action="OnGetDownloadFileFromFolder" asp-route-path="@Model.PdfData.Path" class="btn btn-primary">Descargar Reporte</a>
+            <a download asp-controller="UserPdf" asp-action="OnGetDownloadFileFromFolder" asp-route-path="@Model.PdfData.Path" class="btn btn-primary"> <img src="~/img/UserPdf/no_pdf.jpg" /><p>Descargar Reporte</p></a>
+
         }
         else
         {

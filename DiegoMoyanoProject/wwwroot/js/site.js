@@ -11,6 +11,7 @@ function openLightbox(event) {
     if (event.target.tagName === 'IMG') {
         const clickedIndex = Array.from(images).indexOf(event.target);
         currentIndex = clickedIndex;
+        CambiarOpacidad("0.1");
         updateLightboxImage();
         document.getElementById('lightbox').style.display = 'flex';
     }
@@ -19,6 +20,7 @@ function openLightbox(event) {
 // Close the lightbox
 function closeLightbox() {
     document.getElementById('lightbox').style.display = 'none';
+    CambiarOpacidad("1");
 }
 
 // Change the lightbox image based on direction (1 for next, -1 for prev)
@@ -56,6 +58,7 @@ function updateLightboxImage() {
     // Highlight the current thumbnail
     const thumbnails = document.querySelectorAll('.thumbnail');
     thumbnails[currentIndex].classList.add('active-thumbnail');
+
 }
 
 // Update the main lightbox image when a thumbnail is clicked
@@ -80,3 +83,6 @@ document.addEventListener('keydown', function (e) {
 });
 
 /*ADD ERROR MESSAGE WHEN PASSWORD IS INCORRECTO*/
+function CambiarOpacidad(opacity) {
+    document.getElementById("dates-container").style.opacity = opacity;
+}

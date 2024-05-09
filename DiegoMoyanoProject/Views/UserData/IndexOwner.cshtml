@@ -17,7 +17,7 @@
             <img src="~/img/UserData/noImage.jpg"
                  alt="No image" class="img-fluid rounded border border-dark">
         }
-        <h5 class="text-primary font-weight-bold">Ventas</h5>
+        <h5 class="text-primary font-weight-bold">@Model.GetImageTypeDescription(ImageType.Sales)</h5>
         <ul class="action-list list-unstyled list-inline">
             @if (Model.Sales != null)
             {
@@ -44,7 +44,7 @@
             <img src="~/img/UserData/noImage.jpg"
                  alt="No image" class="img-fluid rounded border border-dark">
         }
-        <h5 class="text-primary font-weight-bold">Campañas</h5>
+        <h5 class="text-primary font-weight-bold">@Model.GetImageTypeDescription(ImageType.Campaigns)</h5>
         <ul class="action-list list-unstyled list-inline">
             @if (Model.Campaigns != null)
             {
@@ -71,7 +71,7 @@
             <img src="~/img/UserData/noImage.jpg"
                  alt="No image" class="img-fluid rounded border border-dark">
         }
-        <h5 class="text-primary font-weight-bold">Dinero Invertido</h5>
+        <h5 class="text-primary font-weight-bold">@Model.GetImageTypeDescription(ImageType.SpentMoney)</h5>
         <ul class="action-list list-unstyled list-inline">
             @if (Model.SpentMoney != null)
             {
@@ -99,7 +99,7 @@
             <img src="~/img/UserData/noImage.jpg"
                  alt="No image" class="img-fluid rounded border border-dark">
         }
-        <h5 class="text-primary font-weight-bold">Articulos de venta</h5>
+        <h5 class="text-primary font-weight-bold">@Model.GetImageTypeDescription(ImageType.Listings)</h5>
         <ul class="action-list list-unstyled list-inline">
             @if (Model.Listings != null)
             {
@@ -114,6 +114,33 @@
         </ul>
     </div>
 
+</div>  
+<div class="container text-center col-lg-4 col-md-6 col-sm-12">
+        @if (Model.TotalCampaigns != null)
+        {
+
+            <img src="@Model.TotalCampaigns.Path"
+                 alt="@Model.TotalCampaigns.ImageType" class="img-fluid rounded border border-dark">
+        }
+        else
+        {
+            <img src="~/img/UserData/noImage.jpg"
+                 alt="No image" class="img-fluid rounded border border-dark">
+        }
+        <h5 class="text-primary font-weight-bold">@Model.GetImageTypeDescription(ImageType.TotalCampaigns)</h5>
+        <ul class="action-list list-unstyled list-inline">
+            @if (Model.TotalCampaigns != null)
+            {
+                <li><a asp-controller="UserData" asp-action="UploadImageForm"  asp-route-type="@ImageType.TotalCampaigns" data-tip="add" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserData" asp-action="UpdateImageForm" asp-route-order="@Model.TotalCampaigns.Order" asp-route-type="@ImageType.TotalCampaigns" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserData" asp-action="Delete" asp-route-order="@Model.TotalCampaigns.Order" asp-route-type="@ImageType.TotalCampaigns" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+            }
+            else
+            {
+                <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-type="@ImageType.TotalCampaigns" data-tip="edit" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
+            }
+        </ul>
+    </div>
 </div>
 
 <!-- Lightbox container -->

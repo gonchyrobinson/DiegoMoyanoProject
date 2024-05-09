@@ -32,10 +32,12 @@ namespace DiegoMoyanoProject.Controllers
             {
                 if (IsNotLogued()) return RedirectToAction("Index", "Login");
                 if (IsOwner()) return RedirectToAction("IndexOwner");
-                var listImages = _userDataRepository.GetUserImages();
-                var listImagesVm = _mapper.Map<List<ImageDataViewModel>>(listImages);
+
+                //Si quiero modificar para que se vea el último registro cargado, descomentar y retornar View(IndexUserDataVm)
+                //var listImages = _userDataRepository.GetUserImages();
+                //var listImagesVm = _mapper.Map<List<ImageDataViewModel>>(listImages);
                 var listDates = _userDataRepository.GetAllDates();
-                return View(new IndexUserDataViewModel(listImagesVm, listDates));
+                return RedirectToAction("IndexDate", new {date = listDates.Max()});
             }
             catch (Exception ex)
             {
@@ -52,7 +54,7 @@ namespace DiegoMoyanoProject.Controllers
                 var listImages = _userDataRepository.GetUserImages(date);
                 var listImagesVm = _mapper.Map<List<ImageDataViewModel>>(listImages);
                 var listDates = _userDataRepository.GetAllDates();
-                return View(new IndexDateUserDataViewModel(listImagesVm, listDates));
+                return View(new IndexDateUserDataViewModel(listImagesVm, listDates,date));
             }
             catch (Exception ex)
             {
@@ -71,6 +73,7 @@ namespace DiegoMoyanoProject.Controllers
                 vm.SpentMoney = _userDataRepository.GetImage(ImageType.SpentMoney, 1);
                 vm.Campaigns = _userDataRepository.GetImage(ImageType.Campaigns, 1);
                 vm.Listings = _userDataRepository.GetImage(ImageType.Listings, 1);
+                vm.TotalCampaigns = _userDataRepository.GetImage(ImageType.TotalCampaigns, 1);
                 return View(vm);
             }
             catch (Exception ex)

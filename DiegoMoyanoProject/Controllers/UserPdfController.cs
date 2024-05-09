@@ -239,14 +239,29 @@ namespace DiegoMoyanoProject.Controllers
                 _userPdfRepoository.UpdatePdf(pdfData, model.Order);
             }
         }
-        public FileResult OnGetDownloadFileFromFolder(string path)
+        public IActionResult OnGetDownloadFileFromFolder(string path)
         {
-            
-            //Read the File data into Byte Array.  
-            byte[] bytes = System.IO.File.ReadAllBytes(path);
-            //Send the File to Download.  
-            var partPath = path.Split(@"\");
-            return File(bytes, "application/octet-stream", partPath[partPath.Length-1] );
+            try
+            {
+                //Read the File data into Byte Array.  
+                byte[] bytes = System.IO.File.ReadAllBytes(path);
+                //Send the File to Download.  
+                var partPath = path.Split(@"\");
+                // Log that the request has been received
+                _logger.LogInformation($"Request received for path: {path}");
+                // Log the success of the operation
+                _logger.LogInformation($"PDF successfully sent to client for path: {path}");
+                return File(bytes, "application/octet-stream", partPath[partPath.Length - 1]);
+
+            }
+            catch (Exception ex)
+            {
+                // Log the exception with as much detail as possible
+                _logger.LogError(ex, $"Error when trying to send PDF to client for path: {path}");
+                return BadRequest();
+            }
+
+
         }
         private int IdLoguedUser()
         {

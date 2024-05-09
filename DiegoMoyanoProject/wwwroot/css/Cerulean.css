@@ -14331,7 +14331,9 @@ textarea.form-control-lg {
             display: block;
             margin-right: 1rem;
         }
-
+#dates-container{
+    opacity:1;
+}
 /* Unordered list with custom numbers style */
 ol.custom-numbers {
     list-style: none;
