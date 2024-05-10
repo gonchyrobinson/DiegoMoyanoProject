@@ -6,6 +6,8 @@ using AutoMapper;
 using DiegoMoyanoProject.ViewModels.UserData;
 using DiegoMoyanoProject.ViewModels.UserPdf;
 using Microsoft.Extensions.Hosting;
+using System.IO;
+using System.Net;
 
 namespace DiegoMoyanoProject.Controllers
 {
@@ -19,7 +21,7 @@ namespace DiegoMoyanoProject.Controllers
 
 
         public UserPdfController(IUserPdfRepository userPdfRepository, IUserRepository userRepository, IWebHostEnvironment webHostEnvironment, ILogger<UserPdfController> logger, IMapper mapper)
-        {
+            {
             _userPdfRepoository = userPdfRepository;
             _userRepository = userRepository;
             _webHostEnvironment = webHostEnvironment;
@@ -34,7 +36,7 @@ namespace DiegoMoyanoProject.Controllers
                 if (IsNotLogued()) return RedirectToAction("Index", "Login");
                 if (IsOwner()) return RedirectToAction("IndexOwner");
                 int order = 1;
-                var pdfNetworkPath = _userPdfRepoository.PdfPath(order);
+                var pdfNetworkPath = _userPdfRepoository.GetPdf(order);
                 var listDates = _userPdfRepoository.GetAllDates();
                 return View(new IndexUserPdfViewModel(pdfNetworkPath, listDates));
             }
@@ -44,12 +46,13 @@ namespace DiegoMoyanoProject.Controllers
                 return BadRequest();
             }
         }
+        
         public IActionResult IndexDate(DateTime date)
         {
             try
             {
                 if (IsNotLogued()) return RedirectToAction("Index", "Login");
-                var pdfNetworkPath = _userPdfRepoository.PdfPath(date);
+                var pdfNetworkPath = _userPdfRepoository.GetPdf(date);
                 var listDates = _userPdfRepoository.GetAllDates();
                 return View(new IndexDateUserPdfViewModel(pdfNetworkPath, listDates));
             }
@@ -66,7 +69,7 @@ namespace DiegoMoyanoProject.Controllers
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
                 int order = 1;
-                var pdf = _userPdfRepoository.GetPdf(order);
+                var pdf = _userPdfRepoository.GetPdfData(order);
                 return View(new IndexOwnerUserPdfViewModel(pdf));
             }
             catch (Exception ex)
@@ -108,44 +111,35 @@ namespace DiegoMoyanoProject.Controllers
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                DeletePdf(order);
-                return RedirectToAction("IndexOwner");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return BadRequest();
-            }
-        }
-
-        private void DeletePdf(int order)
-        {
-            var pdf = _userPdfRepoository.GetPdf(order);
-            if (pdf != null)
-            {
                 _userPdfRepoository.DeletePdf(order);
                 _userPdfRepoository.ReduceOrder();
-                System.IO.File.Delete(pdf.Path);
+                return RedirectToAction("IndexOwner");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
             }
         }
 
+
         [HttpPost]
-        public IActionResult Upload(UploadPdfFormViewModel model)
+        public async Task<IActionResult> Upload(UploadPdfFormViewModel model)
         {
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
                 if (!ModelState.IsValid) throw (new ModelStateInvalidException());
                 if (model.InputFile == null) return RedirectToAction("IndexOnwer");
-                DateTime todayDate = DateTime.Today;
-                var fileExtension = Path.GetExtension(model.InputFile.FileName);
-                string fileNameWithOutExtension = "Report" + '_' + todayDate.ToString("ddMMyyyy") + "_" + DateTime.Now.ToString("HHmmss");
-                string fileName = fileNameWithOutExtension + fileExtension;
-                string rutaGuardar = Path.Combine(_webHostEnvironment.WebRootPath, "userPdf");
-                if (!Directory.Exists(rutaGuardar)) Directory.CreateDirectory(rutaGuardar);
-                string filePath = Path.Combine(rutaGuardar, fileName);
-                DeleteFilesOfLastOrder();
-                SaveImageInCreatedFolderAndUploadInDB(model, filePath);
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    IFormFile file = (IFormFile)model.InputFile;
+                    await (file.CopyToAsync(memoryStream));
+                    // Retorna los bytes del MemoryStream
+                    _userPdfRepoository.AddOrder();
+                    _userPdfRepoository.DeletePdfWithOrderMoreThan3();
+                    _userPdfRepoository.UploadPdf(new PdfData(memoryStream.ToArray(),1));
+                }
                 return RedirectToAction("IndexOwner");
             }
             catch (InconsistenceInTheDBException ex)
@@ -160,47 +154,27 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
 
-        private void SaveImageInCreatedFolderAndUploadInDB(UploadPdfFormViewModel model, string filePath)
-        {
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                model.InputFile.CopyTo(stream);
-                int order = 1;
-                PdfData pdfData = new PdfData(filePath, order);
-                //I add an order, because, the inserted image, now should be at order 1
-                _userPdfRepoository.AddOrder();
-                _userPdfRepoository.UploadPdf(pdfData);
-            }
-        }
 
-        private void DeleteFilesOfLastOrder()
+        private void DeleteFilesOfLastOrder(int order = 3)
         {
-            int order = 3;
-            var deletePdf = _userPdfRepoository.GetPdf(order);
-            if (deletePdf != null)
-            {
-                //Save the path like this, to delete inicial / in the path
-                System.IO.File.Delete(deletePdf.Path);
-                _userPdfRepoository.DeletePdf(order);
-            }
+            _userPdfRepoository.DeletePdf(order);
+            _userPdfRepoository.ReduceOrder();
         }
         [HttpPost]
-        public IActionResult Update(UpdatePdfFormViewModel model)
+        public async Task<IActionResult> Update(UpdatePdfFormViewModel model)
         {
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
                 if (!ModelState.IsValid) throw (new ModelStateInvalidException());
                 if (model.InputFile == null) return RedirectToAction("IndexOnwer");
-                DateTime todayDate = DateTime.Today;
-                var fileExtension = Path.GetExtension(model.InputFile.FileName);
-                string fileNameWithOutExtension = "Report" + '_' + todayDate.ToString("ddMMyyyy") + "_" + DateTime.Now.ToString("HHmmss");
-                string fileName = fileNameWithOutExtension + fileExtension;
-                string rutaGuardar = Path.Combine(_webHostEnvironment.WebRootPath, "userPdf");
-                if (!Directory.Exists(rutaGuardar)) Directory.CreateDirectory(rutaGuardar);
-                string filePath = Path.Combine(rutaGuardar, fileName);
-                DeleteImageFromLocalEnviorment(model);
-                SaveImageInCreatedFolderAnUpdateInDB(model, filePath);
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    IFormFile file = (IFormFile)model.InputFile;
+                    await (file.CopyToAsync(memoryStream));
+                    // Retorna los bytes del MemoryStream
+                    _userPdfRepoository.UpdatePdf(new PdfData(memoryStream.ToArray(),model.Order),model.Order);
+                }
                 return RedirectToAction("IndexOwner");
             }
             catch (InconsistenceInTheDBException ex)
@@ -213,52 +187,24 @@ namespace DiegoMoyanoProject.Controllers
                 _logger.LogError(ex.Message);
                 return BadRequest();
             }
-
         }
+       
 
-
-        private void DeleteImageFromLocalEnviorment(UpdatePdfFormViewModel model)
-        {
-            var deletePdf = _userPdfRepoository.GetPdf(model.Order);
-            if (deletePdf != null)
-            {
-                System.IO.File.Delete(deletePdf.Path);
-            }
-            else
-            {
-                throw new InconsistenceInTheDBException("Existe mas de una imagen para un mismo usuario");
-            }
-        }
-
-        private void SaveImageInCreatedFolderAnUpdateInDB(UpdatePdfFormViewModel model, string filePath)
-        {
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                model.InputFile.CopyTo(stream);
-                PdfData pdfData = new PdfData(filePath, model.Order);
-                _userPdfRepoository.UpdatePdf(pdfData, model.Order);
-            }
-        }
-        public IActionResult OnGetDownloadFileFromFolder(string path)
+        public FileResult OnGetDownloadFileFromFolder(string pdf)
         {
             try
             {
-                //Read the File data into Byte Array.  
-                byte[] bytes = System.IO.File.ReadAllBytes(path);
-                //Send the File to Download.  
-                var partPath = path.Split(@"\");
-                // Log that the request has been received
-                _logger.LogInformation($"Request received for path: {path}");
-                // Log the success of the operation
-                _logger.LogInformation($"PDF successfully sent to client for path: {path}");
-                return File(bytes, "application/octet-stream", partPath[partPath.Length - 1]);
+                // Decodifica la cadena Base64 a un arreglo de bytes
+                byte[] pdfBytes = Convert.FromBase64String(pdf);
 
+                // Devuelve el archivo PDF como una descarga
+                return File(pdfBytes, "application/octet-stream", "reporte.pdf");
             }
             catch (Exception ex)
             {
                 // Log the exception with as much detail as possible
-                _logger.LogError(ex, $"Error when trying to send PDF to client for path: {path}");
-                return BadRequest();
+                _logger.LogError(ex, $"Error when trying to send PDF to client");
+                throw new BadHttpRequestException("Error al descargar pdf");
             }
 
 

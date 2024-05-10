@@ -8,7 +8,13 @@
     <div class="container text-center col-lg-4 col-md-6 col-sm-12">
         @if (Model.PdfData != null)
         {
-            <a download asp-controller="UserPdf" asp-action="OnGetDownloadFileFromFolder" asp-route-path="@Model.PdfData.Path" class="btn btn-primary"> <img src="~/img/UserPdf/no_pdf.jpg" /><p>Descargar Reporte</p></a>
+            <form asp-controller="UserPdf" asp-action="OnGetDownloadFileFromFolder" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="pdf" value="@Convert.ToBase64String(Model.PdfData.Pdf)" />
+                <button type="submit" class="btn btn-primary">
+                    <img src="~/img/UserPdf/no_pdf.jpg" />
+                    <p>Descargar Reporte</p>
+                </button>
+            </form>
 
         }
         else

@@ -1,12 +1,14 @@
 using AutoMapper;
 using DiegoMoyanoProject.Mapper;
 using DiegoMoyanoProject.Repository;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDistributedMemoryCache();
+CultureInfo.CurrentCulture = new CultureInfo("es-ES");
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromSeconds(1200);

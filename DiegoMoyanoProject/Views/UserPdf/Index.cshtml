@@ -1,6 +1,6 @@
 ﻿@model DiegoMoyanoProject.ViewModels.UserPdf.IndexUserPdfViewModel;
 
-@if (Model.Path!=null)
+@if (Model.Pdf!=null)
 {
     <div class="container text-center">
         <h1 class="display-4">Reporte de datos</h1>
@@ -9,7 +9,13 @@
     <div class="gallery container row" onclick="openLightbox(event)">
             <div class="container text-center col-lg-4 col-md-6 col-sm-12">
                 <h5 class="text-primary font-weight-bold">Descargar reportes</h5>
-            <a download asp-controller="UserPdf" asp-action="OnGetDownloadFileFromFolder" asp-route-path="@Model.Path" class="btn btn-primary"> <img src="~/img/UserPdf/no_pdf.jpg" /><p>Descargar Reporte</p></a>
+            <form asp-controller="UserPdf" asp-action="OnGetDownloadFileFromFolder" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="pdf" value="@Convert.ToBase64String(Model.Pdf)" />
+                <button type="submit" class="btn btn-primary">
+                    <img src="~/img/UserPdf/no_pdf.jpg" />
+                    <p>Descargar Reporte</p>
+                </button>
+            </form>
             </div>
     </div>
 

@@ -2,14 +2,14 @@
 {
     public class IndexDateUserPdfViewModel
     {
-        public string? Path { get; set; }
+        public byte[]? Pdf { get; set; }
         public List<DateTime> Dates { get; set; }
 
         public IndexDateUserPdfViewModel() { }
 
-        public IndexDateUserPdfViewModel(string? path, List<DateTime> dates)
+        public IndexDateUserPdfViewModel(byte[]? pdf, List<DateTime> dates)
         {
-            Path = path;
+            Pdf = pdf;
             Dates = dates;
         }
 

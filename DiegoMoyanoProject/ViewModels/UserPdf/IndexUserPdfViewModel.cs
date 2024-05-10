@@ -4,14 +4,14 @@ namespace DiegoMoyanoProject.ViewModels.UserPdf
 {
     public class IndexUserPdfViewModel
     {
-            public string? Path { get; set; }
+            public byte[]? Pdf { get; set; }
             public List<DateTime> Dates { get; set; }
 
             public IndexUserPdfViewModel() { }
 
-            public IndexUserPdfViewModel(string? path, List<DateTime> dates)
+            public IndexUserPdfViewModel(byte[]? pdf, List<DateTime> dates)
             {
-                Path = path;
+                Pdf = pdf;
                 Dates = dates;
             }
     }

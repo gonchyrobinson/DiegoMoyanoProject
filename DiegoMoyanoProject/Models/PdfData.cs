@@ -2,15 +2,15 @@
 {
     public class PdfData
     {
-        private string path;
+        private byte[] pdf;
         private int order;
         public PdfData() { }
-        public PdfData(string path, int order)
+        public PdfData(byte[] pdf, int order)
         {
-            this.path = path;
+            this.pdf = pdf;
             this.order = order;
         }
-        public string Path { get => path; set => path = value; }
+        public byte[] Pdf { get => pdf; set => pdf = value; }
         public int Order { get => order; set => order = value; }
     }
 }
