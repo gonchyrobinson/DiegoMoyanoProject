@@ -67,6 +67,8 @@ namespace DiegoMoyanoProject.Controllers
                 return BadRequest();
             }
         }
+
+
         [HttpGet]
         public IActionResult Retirar(decimal CapitalInvested)
         {
@@ -114,6 +116,54 @@ namespace DiegoMoyanoProject.Controllers
             {
                 return View();
             }catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
+        }
+
+        [HttpGet]
+        public IActionResult MoreInfo(string title, string body)
+        {
+            try
+            {
+                return View(new MoreInfoViewModel(title, body));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MoreInfo(MoreInfoViewModel emailVM)
+        {
+            try
+            {
+                Email mail = _mapper.Map<Email>(emailVM);
+                await _IEmailSenderRepository.SendEmail(mail);
+                return RedirectToAction("MailEnviadoSinLoguear", new { enviado = true });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
+        }
+
+        [HttpGet]
+
+        public IActionResult MailEnviadoSinLoguear(bool enviado)
+        {
+            if (IsNotLogued()) { return RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
+            if (LoguedUserRole() != Role.Operative) { throw new Exception("El usuario no es operativo, por lo cual no puede acceder"); }
+            if (enviado == false) { throw new Exception("ERROR AL ENVIAR EL MENSAJE"); }
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 return BadRequest();

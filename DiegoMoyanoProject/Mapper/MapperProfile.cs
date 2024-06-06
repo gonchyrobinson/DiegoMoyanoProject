@@ -34,10 +34,11 @@ namespace DiegoMoyanoProject.Mapper
 
             CreateMap<Email, InvertirEmailViewModel>().
                 ReverseMap();
-
             CreateMap<Email, RetirarEmailViewModel>().
                 ReverseMap();
             CreateMap<User, ViewInversionViewModel>().
+                ReverseMap();
+            CreateMap<Email, MoreInfoViewModel>().
                 ReverseMap();
         }
     }

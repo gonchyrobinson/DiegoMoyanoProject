@@ -31,7 +31,6 @@ namespace DiegoMoyanoProject.Repository
                 mailMessage.Body = mail.Body;
                 // Esperar 10 segundos antes de enviar el correo electrónico
                 await Task.Delay(1000);
-
                 // Envía el correo electrónico de manera asincrónica
                 await client.SendMailAsync(mailMessage);
         
