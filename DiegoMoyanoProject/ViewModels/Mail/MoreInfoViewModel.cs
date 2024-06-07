@@ -9,7 +9,7 @@ namespace DiegoMoyanoProject.ViewModels.Mail
         {
             Name = name;
             Mail = email;
-            Title = title;
+            Subject = title;
             Body = body;
         }
 
@@ -17,8 +17,16 @@ namespace DiegoMoyanoProject.ViewModels.Mail
         {
             Name = "";
             Mail = "";
-            Title = title;
+            Subject = title;
             Body = body;
+        }
+
+        public MoreInfoViewModel()
+        {
+            Name = "";
+            Mail = "";
+            Subject = "";
+            Body = "";
         }
 
         [Display(Name = "Name")]
@@ -27,7 +35,7 @@ namespace DiegoMoyanoProject.ViewModels.Mail
         public string Mail { get; set; }
         [Display(Name = "Title")]
         [Required(ErrorMessage ="Este campo es requerido")]
-        public string Title { get; set; }
+        public string Subject { get; set; }
         [Display(Name ="Body")]
         [Required(ErrorMessage="Este campo es requerido")]
         public string Body { get; set; }

@@ -142,6 +142,7 @@ namespace DiegoMoyanoProject.Controllers
             try
             {
                 Email mail = _mapper.Map<Email>(emailVM);
+                mail.MoreInfo();
                 await _IEmailSenderRepository.SendEmail(mail);
                 return RedirectToAction("MailEnviadoSinLoguear", new { enviado = true });
             }
@@ -156,8 +157,6 @@ namespace DiegoMoyanoProject.Controllers
 
         public IActionResult MailEnviadoSinLoguear(bool enviado)
         {
-            if (IsNotLogued()) { return RedirectToRoute(new { Controller = "Login", Action = "Index" }); }
-            if (LoguedUserRole() != Role.Operative) { throw new Exception("El usuario no es operativo, por lo cual no puede acceder"); }
             if (enviado == false) { throw new Exception("ERROR AL ENVIAR EL MENSAJE"); }
             try
             {
