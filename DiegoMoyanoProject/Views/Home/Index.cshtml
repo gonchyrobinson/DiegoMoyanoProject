@@ -20,8 +20,15 @@
         <div class="hero-section">
             <div class="container">
                 <h1 class="heading-home col-lg-12 fs-1">Blue Cheetah International</h1>
-                <a asp-controller="Login" asp-action="Index" class="btn text-light button-home-login fs-1">Log In</a>
-            </div>
+                @if (!Model.IsLogued)
+                {   
+                    <a asp-controller="Login" asp-action="Index" class="btn text-light button-home-login fs-1">Log In</a>
+                }
+                else
+                {
+                    <a asp-controller="Login" asp-action="LogOut" class="btn text-light button-home-login fs-1">Log Out</a>
+                }
+                </div>
     </section>
     </div>
 
