@@ -14224,7 +14224,7 @@ textarea.form-control-lg {
     }
 
 /* Lightbox styles */
-#lightbox {
+#lightbox, #lightbox2 {
     display: none;
     position: fixed;
     top: 0;
@@ -14238,14 +14238,14 @@ textarea.form-control-lg {
     flex-direction: column;
 }
 
-    #lightbox img {
+    #lightbox img, #lightbox2 img {
         max-width: 80%;
         max-height: 60vh;
         box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
         border-radius: 10px;
     }
 
-#close-btn {
+#close-btn, #close-btn2 {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -14257,7 +14257,8 @@ textarea.form-control-lg {
 
 /* Style for navigation buttons */
 #prev-btn,
-#next-btn {
+#next-btn, #prev-btn2,
+#next-btn2 {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -14270,16 +14271,17 @@ textarea.form-control-lg {
     transition: background-color 0.3s;
 }
 
-#prev-btn {
+#prev-btn, #prev-btn2 {
     left: 10px;
 }
 
-#next-btn {
+#next-btn, #next-btn2 {
     right: 10px;
 }
 
     #prev-btn:hover,
-    #next-btn:hover {
+    #next-btn:hover, #prev-btn2:hover,
+    #next-btn2:hover {
         background-color: rgba(0, 0, 0, 0.8);
     }
 

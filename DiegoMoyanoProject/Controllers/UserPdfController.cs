@@ -233,5 +233,12 @@ namespace DiegoMoyanoProject.Controllers
         {
             return LoguedUserRole() == Role.Operative;
         }
+
+        [HttpGet]
+        public IActionResult PruebaImg()
+        {
+            var img = _userPdfRepoository.GetPdf(DateTime.Today);
+            return (View(new PruebaImgViewModel(img)));
+        }
     }
 }

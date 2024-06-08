@@ -2,6 +2,13 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+
+
+// To add keyboard navigation (left/right arrow keys
+const lightbox = document.getElementById('lightbox') || document.getElementById('lightbox2');
+const lightboxImg = document.getElementById('lightbox-img') || document.getElementById('lightbox-img2');
+const thumbnailContainer = document.getElementById('thumbnail-container') || document.getElementById('thumbnail-container2');
+
 let currentIndex = 0;
 const images = document.querySelectorAll('.gallery img');
 const totalImages = images.length;
@@ -13,13 +20,13 @@ function openLightbox(event) {
         currentIndex = clickedIndex;
         CambiarOpacidad("0.1");
         updateLightboxImage();
-        document.getElementById('lightbox').style.display = 'flex';
+        lightbox.style.display = 'flex';
     }
 }
 
 // Close the lightbox
 function closeLightbox() {
-    document.getElementById('lightbox').style.display = 'none';
+    lightbox.style.display = 'none';
     CambiarOpacidad("1");
 }
 
@@ -36,16 +43,10 @@ function changeImage(direction) {
 
 // Update the lightbox image and thumbnails
 function updateLightboxImage() {
-    const lightboxImg = document.getElementById('lightbox-img');
-    const thumbnailContainer = document.getElementById('thumbnail-container');
-
-    // Update the main lightbox image
     lightboxImg.src = images[currentIndex].src;
 
-    // Clear existing thumbnails
     thumbnailContainer.innerHTML = '';
 
-    // Add new thumbnails
     images.forEach((image, index) => {
         const thumbnail = document.createElement('img');
         thumbnail.src = image.src;
@@ -55,10 +56,8 @@ function updateLightboxImage() {
         thumbnailContainer.appendChild(thumbnail);
     });
 
-    // Highlight the current thumbnail
     const thumbnails = document.querySelectorAll('.thumbnail');
     thumbnails[currentIndex].classList.add('active-thumbnail');
-
 }
 
 // Update the main lightbox image when a thumbnail is clicked
@@ -70,10 +69,9 @@ function updateMainImage(index) {
 // Add initial thumbnails
 updateLightboxImage();
 
-
 // To add keyboard navigation (left/right arrow keys)
 document.addEventListener('keydown', function (e) {
-    if (document.getElementById('lightbox').style.display === 'flex') {
+    if (lightbox.style.display === 'flex') {
         if (e.key === 'ArrowLeft') {
             changeImage(-1);
         } else if (e.key === 'ArrowRight') {
@@ -84,5 +82,29 @@ document.addEventListener('keydown', function (e) {
 
 /*ADD ERROR MESSAGE WHEN PASSWORD IS INCORRECTO*/
 function CambiarOpacidad(opacity) {
-    document.getElementById("dates-container").style.opacity = opacity;
+    if (document.getElementById("dates-container")) {
+        document.getElementById("dates-container").style.opacity = opacity;
+    }
+}
+
+
+
+//Show img
+function ShowImg(byteImg) {
+    const blob = new Blob([bytes], { type: 'image/png' });
+
+    // Create a temporary URL for the blob
+    const imageUrl = URL.createObjectURL(blob);
+
+    // Create an image element
+    const img = new Image();
+    img.src = imageUrl;
+
+    // Append the image to the document body
+    document.getElementById('image-container').appendChild(img);
+
+    // Optionally, revoke the object URL after the image has loaded
+    img.onload = function () {
+        URL.revokeObjectURL(imageUrl);
+    };
 }
