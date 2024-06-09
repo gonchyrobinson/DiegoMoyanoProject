@@ -10,7 +10,7 @@
         @foreach (var img in Model.Images)
         {
             <div class="container text-center col-lg-4 col-md-6 col-sm-12">
-                <img src="@img.Path"
+                <img src="@img.Blob64img"
                      alt="@img.GetImageTypeDescription()" class="img-fluid rounded border border-dark">
 
                 <h5 class="text-primary font-weight-bold">@img.GetImageTypeDescription()</h5>
@@ -41,7 +41,7 @@
                 @foreach (var date in Model.Dates)
                 {
                     <li class="border m-2 border-primary rounded">
-                        <a asp-controller="UserData" asp-action="IndexDate" asp-route-date="@date.ToString("yyyy-MM-dd")" class="text-decoration-none list-group-item btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder">
+                        <a asp-controller="UserData" asp-action="IndexDate" asp-route-date="@date" class="text-decoration-none list-group-item btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder">
                             @date.ToString("yyyy-MM-dd")
                         </a>
                     </li>

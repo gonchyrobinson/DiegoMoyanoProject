@@ -24,20 +24,18 @@ namespace DiegoMoyanoProject.Mapper
             CreateMap<User, UserOfIndexUserViewModel>().
             ReverseMap();
 
-            CreateMap<ImageData, ImageDataViewModel>().
+            CreateMap<ImageFile, ImageDataViewModel>().
             ReverseMap();
-
-            CreateMap<ImageData, UploadImageFormViewModel>().
-             ReverseMap();
             CreateMap<ImageData, UpdateImageFormViewModel>().
              ReverseMap();
 
             CreateMap<Email, InvertirEmailViewModel>().
                 ReverseMap();
-
             CreateMap<Email, RetirarEmailViewModel>().
                 ReverseMap();
             CreateMap<User, ViewInversionViewModel>().
+                ReverseMap();
+            CreateMap<Email, MoreInfoViewModel>().
                 ReverseMap();
         }
     }

@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@using DiegoMoyanoProject.ViewModels.Mail
+@model MoreInfoViewModel
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+            <div class="card border-0 shadow rounded-3 my-5">
+                <div class="card-body p-4 p-sm-5">
+                    <h5 class="display-6 fw-bolder mb-0 text-center"><span class="text-gradient d-inline">Welcome to Blue Cheetah International</span></h5>
+                    <form asp-controller="Email" asp-action="MoreInfo">
+                        <div class="col-md-4 col-10 pt-2">
+                            <img class="mt-2 ms-2 img-fluid rounded" style="max-width:230px" src="~/img/Home/LogoBlueCheetah.jpeg" alt="Blue Cheetah">
+                        </div>
+                        <p class="display-7 fw-bolder mb-5 text-center"> Please complete the following form to receive more information</p>
+                        <div class="form-floating mb-3">
+                            <input asp-for="@Model.Name" type="text" class="form-control" id="floatingInput" placeholder="Please enter your complete Name">
+                            <label class="form-label"  for="floatingInput" asp-for="@Model.Name"></label>
+                            <span asp-validation-for="@Model.Name" class="mt-1 text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="@Model.Mail" type="text" class="form-control" id="floatingInput" placeholder="Please enter your mail">
+                            <label class="form-label" for="floatingInput" asp-for="@Model.Mail"></label>
+                            <span asp-validation-for="@Model.Mail" class="mt-1 text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="@Model.Subject" class="form-control">
+                            <label class="form-label" asp-for="@Model.Subject"></label>
+                            <span asp-validation-for="@Model.Subject" class="mt-1 text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-5">
+                            <textarea class="form-control" asp-for="@Model.Body" rows="8"></textarea>
+                            <label class="form-label" asp-for="@Model.Body"></label>
+                            <span asp-validation-for="@Model.Body" class="mt-1 text-danger"></span>
+                        </div>
+                        <div class="d-grid">
+                            <button class="btn btn-primary btn-login text-uppercase fw-bold" type="submit">
+                                Enviar
+                            </button>
+                        </div>
+                        <hr class="my-4">
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

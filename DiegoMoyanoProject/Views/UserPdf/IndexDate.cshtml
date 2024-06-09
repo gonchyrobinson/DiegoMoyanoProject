@@ -8,35 +8,20 @@
 
     <div class="gallery container row" onclick="openLightbox(event)">
         <div class="container text-center col-lg-4 col-md-6 col-sm-12">
-            <h5 class="text-primary font-weight-bold">Descargar reportes</h5>
-            <form asp-controller="UserPdf" asp-action="OnGetDownloadFileFromFolder" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="pdf" value="@Convert.ToBase64String(Model.Pdf)" />
-                <button type="submit" class="btn btn-primary">
-                    <img src="~/img/UserPdf/no_pdf.jpg" />
-                    <p>Descargar Reporte</p>
-                </button>
-            </form>
+                <h5 class="text-primary font-weight-bold">Descargar reportes</h5>
+                <form asp-controller="UserPdf" asp-action="OnGetDownloadFileFromFolder" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="pdf" value="@Convert.ToBase64String(Model.Pdf)" />
+                    <button type="submit" class="btn btn-primary">
+                        <img src="~/img/UserPdf/no_pdf.jpg" />
+                        <p>Descargar Reporte</p>
+                    </button>
+                </form>
         </div>
     </div>
 
-    @if (Model.Dates.Count() > 0)
-    {
-        <div class="container text-center">
-            <ul class="list-group list-unstyled d-flex flex-row flex-wrap justify-content-center">
-                @foreach (var date in Model.Dates)
-                {
-                    <li class="border m-2 border-primary rounded">
-                        <a asp-controller="UserPdf" asp-action="IndexDate" asp-route-date="@date.ToString("yyyy-MM-dd")" class="text-decoration-none list-group-item btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder">
-                            @date.ToString("yyyy-MM-dd")
-                        </a>
-                    </li>
-                }
-            </ul>
-        </div>
-    }
 
 }
-else 
+else
 {
     <section class="py-3 py-md-5 min-vh-100 d-flex justify-content-center align-items-center">
         <div class="container">
@@ -48,14 +33,29 @@ else
                             <i class="bi bi-exclamation-circle-fill text-danger display-4"></i>
                             <span class="display-1 fw-bold bsb-flip-h">4</span>
                         </h2>
-                        <h3 class="h2 mb-2">Oops! Aún no se cargaron sus datos</h3>
-                        <p class="mb-5">Si quiere ver sus datos, por favor vuelva a ingresar mas tarde</p>
+                        <h3 class="h2 mb-2">Oops! Aún no se cargó el reporte para esta fecha.</h3>
+                        <p class="mb-5">Si quiere ver el reporte, por favor vuelva a ingresar mas tarde</p>
                         <a class="btn bsb-btn-5xl btn-dark rounded-pill px-5 fs-6 m-0" asp-controller="Home" asp-action="Index" role="button">Volver a inicio</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+}
+@if (Model.Dates.Count() > 0)
+{
+    <div class="container text-center">
+        <ul class="list-group list-unstyled d-flex flex-row flex-wrap justify-content-center">
+            @foreach (var date in Model.Dates)
+            {
+                <li class="border m-2 border-primary rounded">
+                    <a asp-controller="UserPdf" asp-action="IndexDate" asp-route-date="@date.ToString("yyyy-MM-dd")" class="text-decoration-none list-group-item btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder">
+                        @date.ToString("yyyy-MM-dd")
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
 }
 
 

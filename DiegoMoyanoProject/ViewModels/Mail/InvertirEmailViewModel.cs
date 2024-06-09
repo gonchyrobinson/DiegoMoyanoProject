@@ -35,6 +35,6 @@ namespace DiegoMoyanoProject.ViewModels.Mail
         [Required(ErrorMessage = "Por favor ingrese una cantidad válida")]
         public int Money { get; set; }
         public decimal CapitalInvested { get; set; }
- 
+
     }
 }

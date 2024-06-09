@@ -4,16 +4,14 @@ namespace DiegoMoyanoProject.Repository
 {
     public interface IUserPdfRepository
     {
-        public bool UploadPdf(PdfData pdf);
-        public bool UpdatePdf(PdfData pdf, int order);
-        public byte[]? GetPdf(int order);
-        public byte[]? GetPdf(DateTime date);
-        public PdfData? GetPdfData( int order);
+        public bool AddDate(DateTime date);
+        public bool UpdatePdf(PdfData pdf, DateTime date);
+        public PdfData? GetPdfData( DateTime date);
         public bool DeletePdf(DateTime date);
         public List<DateTime> GetAllDates();
-        public bool AddOrder();
-        public bool ReduceOrder();
-        public bool DeletePdf(int order);
-        public bool DeletePdfWithOrderMoreThan3(int order=3);
+        public bool deleteOlderIfNeeded(int maxSupported = 3);
+        public int countImagesAdded();
+        public byte[]? GetPdf(DateTime date);
+
     }
 }

@@ -2,111 +2,91 @@
     ViewData["Title"] = "Home Page";
 }
 @model DiegoMoyanoProject.ViewModels.Home.IndexHomeViewModel;
-<div class="text-center container">
-    <div class="container">
-        <h1 class="display-4 fw-bolder">Blue Cheetah</h1>
-    </div>
-    <section class="py-5 bg-image-home text-white" >
-        <div class="container px-5 my-5">
-            <div class="text-center">
-                <div class="d-inline-block bg-light rounded mb-2 d-lg-block">
-                    <h2 class="display-4 fw-bolder mb-4 text-primary">Ingresa para ver tu rendimiento</h2>
-                </div>
-                <div class="d-inline-block bg-light rounded mb-2">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Cheetah International</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+   @*  <div class="personalized-orange p-5 text-center text-white fs-3">
+        <p class="personalized-orange fs-3 text-white"> Amazon FBA Investments - Global Trade Cooperation - International Trade Services</p>
+    </div> *@
+    <!-- Hero Section -->
+    <section class>
+        <div class="hero-section">
+            <div class="container">
+                <h1 class="heading-home col-lg-12 fs-1">Blue Cheetah International</h1>
                 @if (!Model.IsLogued)
-                {
-                    <a class="btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder" asp-controller="Login" asp-action="Index">Iniciar Sesión</a>
+                {   
+                    <a asp-controller="Login" asp-action="Index" class="btn text-light button-home-login fs-1">Log In</a>
                 }
                 else
                 {
-                    <a class="btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder" asp-controller="Login" asp-action="LogOut">Cerrar Sesión</a>
+                    <a asp-controller="Login" asp-action="LogOut" class="btn text-light button-home-login fs-1">Log Out</a>
                 }
                 </div>
-            </div>
-        </div>
     </section>
-    <section class="py-5 container">
-        <div class="container px-5 mb-5">
-            <div class="container text-center mb-5">
-                <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Ventas desde USA para la Argentina</span></h1>
-            </div>
-            <div class="row gx-5 justify-content-center">
-                <div class="container col-lg-11 col-xl-9 col-xxl-8">
-                    <!-- Project Card 1-->
-                    <div class="card overflow-hidden shadow rounded-4 border-0 mb-5">
-                        <div class="card-body p-0">
-                            <div class="align-items-center">
-                                <div class="p-5">
-                                    <h2 class="fw-bolder">Nuestro Paquete mas importante es el tuyo</h2>
-                                    <p>Blue Cheetah se asegura de que tus pedidos viajen en el mejor empaque posible.</p>
-                                </div>
-                                <img class="img-fluid" src="~/img/Home/LogoBlueCheetah.jpeg" alt="Blue Cheetah">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Project Card 2-->
-                    <div class=" card overflow-hidden shadow rounded-4 border-0 mb-5">
-                        <div class=" card-body p-0">
-                            <div class=" align-items-center">
-                                <div class="p-5">
-                                    <h2 class="fw-bolder">Hacemos que lo difícil sea mucho más fácil</h2>
-                                    <p>Somos la forma más fácil, rápida y segura de importar tus compras de USA hasta la puerta de tu casa</p>
-                                </div>
-                                <img class="img-fluid" src="~/img/Home/LogoFBA.jpeg" alt="FBA">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Project Card 2-->
-                    <div class=" card overflow-hidden shadow rounded-4 border-0 mb-5">
-                        <div class=" card-body p-0">
-                            <div class=" align-items-center">
-                                <img class="img-fluid" src="~/img/Home/IphoneLlegaATiempo.jpg" alt="Tu iphone llega a tiempo">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Project Card 2-->
-                    <div class=" card overflow-hidden shadow rounded-4 border-0 mb-5">
-                        <div class=" card-body p-0">
-                            <div class=" align-items-center">
-                                <img class="img-fluid" src="~/img/Home/Ps4.jpg" alt="Compra tu PS4">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Project Card 2-->
-                    <div class=" card overflow-hidden shadow rounded-4 border-0 mb-5">
-                        <div class=" card-body p-0">
-                            <div class=" align-items-center">
-                                <img class="img-fluid" src="~/img/Home/PedidoLlegaATiempo.jpg" alt="Tu pedido llega a tiempo">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Project Card 2-->
-                    <div class=" card overflow-hidden shadow rounded-4 border-0 mb-5">
-                        <div class=" card-body p-0">
-                            <div class=" align-items-center">
-                                <img class="img-fluid" src="~/img/Home/McBookAir.jpg" alt="Compra tu McBookAir">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Project Card 2-->
-                    <div class=" card overflow-hidden shadow rounded-4 border-0 mb-5">
-                        <div class=" card-body p-0">
-                            <div class=" align-items-center">
-                                <img class="img-fluid" src="~/img/Home/SuperRobot.jpg" alt="Compra tu super robot">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Project Card 2-->
-                    <div class=" card overflow-hidden shadow rounded-4 border-0 mb-5">
-                        <div class=" card-body p-0">
-                            <div class=" align-items-center">
-                                <img class="img-fluid" src="~/img/Home/CompraRopa.jpg" alt="Compra Ropa">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-</div>
+    </div>
 
+    <!-- Global Trade Cooperation Section -->
+    <section class="info-section border-black m-5">
+        
+        <div class="container">
+            <h2 class="color-orange">Global Trade Cooperation</h2>
+            <p>We focus on collaborating with all international companies that seek to expand their horizons, facilitating fair and mutually beneficial trade relations agreements.</p>
+            <a asp-controller="Email" asp-action="MoreInfo" asp-route-title="Global Trade Cooperation" asp-route-body="I want more info about this Topic" class="button-orange-personalized btn text-light button-home-login fs-5">More Info</a>
+        </div>
+    </section>
+    <section class="info-section bg-gris border-black m-5">
+        <div class="container">
+            <h2 class="color-orange">
+                International Trade Services</h3>
+                <p>We facilitate the exchange of goods and services across international borders. Some key services are:</p>
+                <ul>
+                    <li>Logistics and Transportation</li>
+                    <li>Customs Brokerage</li>
+                    <li>Trade Finance</li>
+                    <li>Trade Compliance and Regulatory Services</li>
+                    <li>Market Research and Consulting</li>
+                    <li>Legal and Regulatory Services</li>
+                    <li>Supply Chain Management</li>
+                    <li>Trade Promotion and Marketing</li>
+                    <li>E-commerce Platforms and Marketplaces</li>
+                </ul>
+                <a asp-controller="Email" asp-action="MoreInfo" asp-route-title="International Trade Services" asp-route-body="I want more info about this Topic"class="button-orange-personalized btn text-light button-home-login fs-5">More Info</a>
+        </div>
+    </section>
+
+    <!-- Amazon FBA Investments Section -->
+    <div class="info-section border-black m-5 ">
+        <div class="container">
+            <h2 class="color-orange">Amazon FBA Investments</h2>
+            <p>Investing in Amazon FBA (Fulfillment by Amazon) involves leveraging the platform's vast infrastructure and customer base to sell products online. Some key aspects to consider are:</p>
+            <ul>
+                <li>Product Selection</li>
+                <li>Sourcing</li>
+                <li>Listing Optimization</li>
+                <li>Inventory Management</li>
+                <li>Fulfillment by Amazon (FBA)</li>
+                <li>Advertising and Marketing</li>
+                <li>Customer Feedback and Reviews</li>
+                <li>Continuous Improvement</li>
+                <li>Diversification</li>
+                <li>Financial Management</li>
+            </ul>
+            <a asp-controller="Email" asp-action="MoreInfo" asp-route-title="Amazon FBA Investments" asp-route-body="I want more info about this Topic" class="button-orange-personalized btn text-light button-home-login fs-5">More Info</a>
+        </div>
+    </div>
+
+   
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> 
+
+</body>
+</html>

@@ -31,7 +31,11 @@ namespace DiegoMoyanoProject.Models
         {
             this.subject = "Solicitud de retiro de dinero realizada";
             this.body = $"Su solicitud de retiro de dinero ha sido presentada. Cuando sea aprobada se actualizará su información en la pagina\n" +
-                $"NOMBRE: {this.name}\n  CANTIDAD A Retirar: {this.money} \n";
+                $"NOMBRE: {this.name}\n  CANTIDAD A Retirar: {this.money} \n MAIL: {this.mail}\n";
+        }
+        public void MoreInfo()
+        {
+            this.body = this.body + $"\n\n\nMAIL ENVIADO POR EL USUARIO: {this.name}.  --  MAIL: {this.mail}";
         }
         public string Mail { get => mail; set => mail = value; }
         public string Name { get => name; set => name = value; }
