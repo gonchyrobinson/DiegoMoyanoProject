@@ -12,47 +12,16 @@ namespace DiegoMoyanoProject.Repository
             _connectionString = connectionString;
         }
 
-        public byte[]? GetPdf(int order)
-        {
-            string queryString = "SELECT pdf from UserPdf WHERE `order` =@order";
-            byte[]? path = null;
-            using (var connection = new SqliteConnection(_connectionString))
-            {
-                var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@order", order));
-                connection.Open();
-                var reader = command.ExecuteScalar();
-                if (reader != null) path = (byte[])reader;
-                connection.Close();
-            }
-            return path;
-        } 
-        public byte[]? GetPdf(DateTime date)
-        {
-            string queryString = "SELECT pdf from UserPdf WHERE date =@date";
-            byte[]? path = null;
-            using (var connection = new SqliteConnection(_connectionString))
-            {
-                var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@date", date.ToString("yyyy-MM-dd")));
-                connection.Open();
-                var reader = command.ExecuteScalar();
-                if (reader != null) path = (byte[])reader;
-                connection.Close();
-            }
-            return path;
-        }
 
-        public bool UploadPdf(PdfData pdf)
+        public bool AddDate(DateTime date)
         {
-            var queryString = "INSERT INTO UserPdf (pdf, date, `order`) VALUES (@pdf, @date, @order)";
+            this.deleteOlderIfNeeded();
+            var queryString = "INSERT INTO UserPdf (date) VALUES (@date)";
             bool inserted = false;
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@pdf", pdf.Pdf));
-                command.Parameters.Add(new SqliteParameter("@date", DateTime.Today.ToString("yyyy-MM-dd")));
-                command.Parameters.Add(new SqliteParameter("@order", pdf.Order));
+                command.Parameters.Add(new SqliteParameter("@date", date.ToShortDateString()));;
                 connection.Open();
                 inserted = command.ExecuteNonQuery() > 0;
                 connection.Close();
@@ -60,49 +29,62 @@ namespace DiegoMoyanoProject.Repository
             if (!inserted) throw (new NotImplementedException("Error cargando los datos"));
             return inserted;
         }
-        public bool UpdatePdf(PdfData pdf, int order)
+        public bool UpdatePdf(PdfData pdf, DateTime date)
         {
-            var queryString = "UPDATE UserPdf SET pdf = @pdf WHERE  `order` = @order";
+            var queryString = "UPDATE UserPdf SET pdf = @pdf WHERE  date = @date";
             bool inserted = false;
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
                 command.Parameters.Add(new SqliteParameter("@pdf", pdf.Pdf));
-                command.Parameters.Add(new SqliteParameter("@order", order));
+                command.Parameters.Add(new SqliteParameter("@date", date.ToShortDateString()));
                 connection.Open();
                 inserted = command.ExecuteNonQuery() > 0;
                 connection.Close();
             }
-            if (!inserted) throw (new NotImplementedException("Error cargando los datos"));
             return inserted;
         }
 
-        public PdfData? GetPdfData( int order)
+        public PdfData? GetPdfData( DateTime date)
         {
-            string queryString = "SELECT pdf from UserPdf WHERE `order` = @order";
+            string queryString = "SELECT pdf from UserPdf WHERE date = @date Limit 1";
             PdfData? pdf = null;
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@order", order));
+                command.Parameters.Add(new SqliteParameter("@date", date.ToShortDateString()));
                 connection.Open();
                 var reader = command.ExecuteScalar();
-                if (reader != null) pdf = new PdfData((byte[])reader, order);
+                if (reader != null && reader!=DBNull.Value) pdf = new PdfData((byte[])reader);
                 connection.Close();
             }
             return pdf;
         }
-
+        public byte[]? GetPdf(DateTime date)
+        {
+            string queryString = "SELECT pdf from UserPdf WHERE date = @date";
+            byte[]? pdf = null;
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                var command = new SqliteCommand(queryString, connection);
+                command.Parameters.Add(new SqliteParameter("@date", date.ToShortDateString()));
+                connection.Open();
+                var reader = command.ExecuteScalar();
+                if (reader != null && reader!=DBNull.Value) pdf = ((byte[])reader);
+                connection.Close();
+            }
+            return pdf;
+        }
         
         
         public bool DeletePdf(DateTime date)
         {
-            string queryString = "DELETE from UserPdf WHERE  date = @date";
+            string queryString = "UPDATE UserPdf SET pdf = NULL WHERE  date = @date";
             var deleted = false;
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@date", date));
+                command.Parameters.Add(new SqliteParameter("@date", date.ToShortDateString()));
                 connection.Open();
                 deleted = command.ExecuteNonQuery() > 0;
                 connection.Close();
@@ -130,58 +112,37 @@ namespace DiegoMoyanoProject.Repository
             }
             return dates;
         }
-        public bool AddOrder()
+
+        public bool deleteOlderIfNeeded(int maxSupported = 3)
         {
-            var queryString = "UPDATE UserPdf SET `order` = `order`+1";
-            bool updated = false;
-            using (var connection = new SqliteConnection(_connectionString))
+            bool deleted = false;
+            if (this.countImagesAdded() >= maxSupported)
             {
-                var command = new SqliteCommand(queryString, connection);
-                connection.Open();
-                updated = command.ExecuteNonQuery() > 0;
-                connection.Close();
-            }
-            return updated;
-        } public bool ReduceOrder()
-        {
-            var queryString = "UPDATE UserPdf SET `order` = `order`-1 WHERE  `order` > 1";
-            bool updated = false;
-            using (var connection = new SqliteConnection(_connectionString))
-            {
-                var command = new SqliteCommand(queryString, connection);
-                connection.Open();
-                updated = command.ExecuteNonQuery() > 0;
-                connection.Close();
-            }
-            return updated;
-        }
-        public bool DeletePdf(int order)
-        {
-            string queryString = "DELETE from UserPdf WHERE `order` = @order";
-            var deleted = false;
-            using (var connection = new SqliteConnection(_connectionString))
-            {
-                var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@order", order));
-                connection.Open();
-                deleted = command.ExecuteNonQuery() > 0;
-                connection.Close();
+                string queryString = "DELETE FROM UserPdf WHERE date = (SELECT min(date) FROM UserPdf)";
+                using (var connection = new SqliteConnection(_connectionString))
+                {
+                    var command = new SqliteCommand(queryString, connection);
+                    connection.Open();
+                    deleted = command.ExecuteNonQuery() > 0;
+                    connection.Close();
+                }
+                if (!deleted) throw new NotImplementedException("Error al insertar un nuevo registro en imagenes, error al borrar el registro mas viejo cuando tengo 4 registros o mas");
             }
             return deleted;
         }
-        public bool DeletePdfWithOrderMoreThan3(int order = 3)
+        public int countImagesAdded()
         {
-            string queryString = "DELETE from UserPdf WHERE `order` > @order";
-            var deleted = false;
+            string queryString = "SELECT count(id) FROM UserPdf";
+            int total = 0;
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@order", order));
                 connection.Open();
-                deleted = command.ExecuteNonQuery() > 0;
+                var reader = command.ExecuteScalar();
+                if (reader != null) total = Convert.ToInt32(reader);
                 connection.Close();
             }
-            return deleted;
+            return total;
         }
     }
 }

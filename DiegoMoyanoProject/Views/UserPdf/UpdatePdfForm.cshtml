@@ -9,9 +9,9 @@
             <div class="card border-0 shadow rounded-3 my-5">
                 <div class="card-body p-4 p-sm-5">
                     @* <h5 class="card-title text-center mb-5 fw-light fs-5 text-gradient ">Sign In</h5> *@
-                    <h5 class="display-6 fw-bolder mb-0 text-center"><span class="text-gradient d-inline">Carga de Reportes</span></h5>
+                    <h5 class="display-6 fw-bolder mb-0 text-center"><span class="text-gradient d-inline">Carga de Reportes del @Model.Date.ToShortDateString()</span></h5>
                     <form asp-controller="UserPdf" asp-action="Update" enctype="multipart/form-data">
-                        <input hidden asp-for="@Model.Order" />
+                        <input type="hidden" asp-for="@Model.Date" />
                         <div class="col-md-4 col-10 pt-2">
                             <img class="mt-2 ms-2 img-fluid rounded" style="max-width:230px" src="~/img/Home/LogoBlueCheetah.jpeg" alt="Blue Cheetah">
                         </div>

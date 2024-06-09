@@ -8,6 +8,7 @@ using DiegoMoyanoProject.ViewModels.UserPdf;
 using Microsoft.Extensions.Hosting;
 using System.IO;
 using System.Net;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DiegoMoyanoProject.Controllers
 {
@@ -21,7 +22,7 @@ namespace DiegoMoyanoProject.Controllers
 
 
         public UserPdfController(IUserPdfRepository userPdfRepository, IUserRepository userRepository, IWebHostEnvironment webHostEnvironment, ILogger<UserPdfController> logger, IMapper mapper)
-            {
+        {
             _userPdfRepoository = userPdfRepository;
             _userRepository = userRepository;
             _webHostEnvironment = webHostEnvironment;
@@ -34,11 +35,11 @@ namespace DiegoMoyanoProject.Controllers
             try
             {
                 if (IsNotLogued()) return RedirectToAction("Index", "Login");
-                if (IsOwner()) return RedirectToAction("IndexOwner");
-                int order = 1;
-                var pdfNetworkPath = _userPdfRepoository.GetPdf(order);
                 var listDates = _userPdfRepoository.GetAllDates();
-                return View(new IndexUserPdfViewModel(pdfNetworkPath, listDates));
+                DateTime maxDate = DateTime.Today;
+                if (listDates.Count() > 0) maxDate = listDates.Max();
+                if (IsOwner()) return RedirectToAction("IndexOwner", new { date = maxDate });
+                return RedirectToAction("IndexDate", new { date = maxDate });
             }
             catch (Exception ex)
             {
@@ -46,7 +47,7 @@ namespace DiegoMoyanoProject.Controllers
                 return BadRequest();
             }
         }
-        
+
         public IActionResult IndexDate(DateTime date)
         {
             try
@@ -63,14 +64,14 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
         [HttpGet]
-        public IActionResult IndexOwner()
+        public IActionResult IndexOwner(DateTime date)
         {
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                int order = 1;
-                var pdf = _userPdfRepoository.GetPdfData(order);
-                return View(new IndexOwnerUserPdfViewModel(pdf));
+                var pdf = _userPdfRepoository.GetPdfData(date);
+                var dates = _userPdfRepoository.GetAllDates();
+                return View(new IndexOwnerUserPdfViewModel(pdf, date, dates));
             }
             catch (Exception ex)
             {
@@ -78,69 +79,64 @@ namespace DiegoMoyanoProject.Controllers
                 return (BadRequest());
             }
         }
-        [HttpGet]
-        public IActionResult UploadPdfForm()
-        {
-            try
-            {
-                if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                return View(new UploadPdfFormViewModel());
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return BadRequest();
-            }
-        }
-        [HttpGet]
-        public IActionResult UpdatePdfForm(int order)
-        {
-            try
-            {
-                if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                return View(new UpdatePdfFormViewModel(order));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return BadRequest();
-            }
-        }
-        public IActionResult Delete(int order)
-        {
-            try
-            {
-                if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                _userPdfRepoository.DeletePdf(order);
-                _userPdfRepoository.ReduceOrder();
-                return RedirectToAction("IndexOwner");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return BadRequest();
-            }
-        }
 
-
-        [HttpPost]
-        public async Task<IActionResult> Upload(UploadPdfFormViewModel model)
+        [HttpGet]
+        public IActionResult UpdatePdfForm(string date)
         {
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                if (!ModelState.IsValid) throw (new ModelStateInvalidException());
-                if (model.InputFile == null) return RedirectToAction("IndexOnwer");
-                using (MemoryStream memoryStream = new MemoryStream())
+                DateTime dateTime;
+
+                if (DateTime.TryParse(date, out dateTime))
                 {
-                    IFormFile file = (IFormFile)model.InputFile;
-                    await (file.CopyToAsync(memoryStream));
-                    // Retorna los bytes del MemoryStream
-                    _userPdfRepoository.AddOrder();
-                    _userPdfRepoository.DeletePdfWithOrderMoreThan3();
-                    _userPdfRepoository.UploadPdf(new PdfData(memoryStream.ToArray(),1));
+                    return View(new UpdatePdfFormViewModel(dateTime));
                 }
-                return RedirectToAction("IndexOwner");
+                else
+                {
+                    _logger.LogError("Error al convertir fecha");
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
+        }
+        public IActionResult Delete(string date)
+        {
+            try
+            {
+                if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
+                DateTime dateTime;
+
+                if (DateTime.TryParse(date, out dateTime))
+                {
+                    _userPdfRepoository.DeletePdf(dateTime);
+                }
+                return RedirectToAction("IndexOwner",new {date = dateTime});
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
+        }
+
+        public  IActionResult Upload(string date)
+        {
+            try
+            {
+                if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
+                DateTime dateTime;
+
+                if (DateTime.TryParse(date, out dateTime))
+                {
+                    _userPdfRepoository.AddDate(dateTime);
+                }
+
+                return RedirectToAction("IndexOwner", new {date = dateTime});
             }
             catch (InconsistenceInTheDBException ex)
             {
@@ -154,12 +150,6 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
 
-
-        private void DeleteFilesOfLastOrder(int order = 3)
-        {
-            _userPdfRepoository.DeletePdf(order);
-            _userPdfRepoository.ReduceOrder();
-        }
         [HttpPost]
         public async Task<IActionResult> Update(UpdatePdfFormViewModel model)
         {
@@ -167,15 +157,15 @@ namespace DiegoMoyanoProject.Controllers
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
                 if (!ModelState.IsValid) throw (new ModelStateInvalidException());
-                if (model.InputFile == null) return RedirectToAction("IndexOnwer");
+                if (model.InputFile == null) return RedirectToAction("Index");
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
                     IFormFile file = (IFormFile)model.InputFile;
                     await (file.CopyToAsync(memoryStream));
                     // Retorna los bytes del MemoryStream
-                    _userPdfRepoository.UpdatePdf(new PdfData(memoryStream.ToArray(),model.Order),model.Order);
+                    _userPdfRepoository.UpdatePdf(new PdfData(memoryStream.ToArray()), model.Date);
                 }
-                return RedirectToAction("IndexOwner");
+                return RedirectToAction("IndexOwner", new {date = model.Date});
             }
             catch (InconsistenceInTheDBException ex)
             {
@@ -188,7 +178,7 @@ namespace DiegoMoyanoProject.Controllers
                 return BadRequest();
             }
         }
-       
+
 
         public FileResult OnGetDownloadFileFromFolder(string pdf)
         {
@@ -232,13 +222,6 @@ namespace DiegoMoyanoProject.Controllers
         private bool IsOperative()
         {
             return LoguedUserRole() == Role.Operative;
-        }
-
-        [HttpGet]
-        public IActionResult PruebaImg()
-        {
-            var img = _userPdfRepoository.GetPdf(DateTime.Today);
-            return (View(new PruebaImgViewModel(img)));
         }
     }
 }
