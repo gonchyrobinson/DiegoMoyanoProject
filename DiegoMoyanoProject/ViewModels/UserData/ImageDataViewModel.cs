@@ -6,7 +6,7 @@ namespace DiegoMoyanoProject.ViewModels.UserData
     public class ImageDataViewModel
     {
         public ImageDataViewModel() { }
-        public string Path { get; set; }
+        public string? Blob64img { get; set; }
         public ImageType ImageType { get; set; }
         public string GetImageTypeDescription()
         {

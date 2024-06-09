@@ -5,9 +5,9 @@
 
 
 // To add keyboard navigation (left/right arrow keys
-const lightbox = document.getElementById('lightbox') || document.getElementById('lightbox2');
-const lightboxImg = document.getElementById('lightbox-img') || document.getElementById('lightbox-img2');
-const thumbnailContainer = document.getElementById('thumbnail-container') || document.getElementById('thumbnail-container2');
+const lightbox = document.getElementById('lightbox') || document.getElementById('lightbox2') || document.getElementById('lightbox3');
+const lightboxImg = document.getElementById('lightbox-img') || document.getElementById('lightbox-img2') || document.getElementById('lightbox-img3');
+const thumbnailContainer = document.getElementById('thumbnail-container') || document.getElementById('thumbnail-container2') || document.getElementById('thumbnail-container3');
 
 let currentIndex = 0;
 const images = document.querySelectorAll('.gallery img');

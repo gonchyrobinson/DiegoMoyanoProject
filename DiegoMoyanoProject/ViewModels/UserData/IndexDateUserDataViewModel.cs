@@ -17,4 +17,5 @@ namespace DiegoMoyanoProject.ViewModels.UserData
             SelectedDate = date.ToString("MMMM");
         }   
     }
+   
 }

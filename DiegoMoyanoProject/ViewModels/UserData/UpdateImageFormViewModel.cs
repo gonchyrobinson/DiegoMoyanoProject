@@ -11,15 +11,23 @@ namespace DiegoMoyanoProject.ViewModels.UserData
         public ImageType ImageType { get; set; }
         [Display(Name = "Imagen")]
         public IFormFile? InputFile { get; set; }
-        public int Order { get; set; }
+        [Display(Name = "Fecha")]
+        public DateTime Date { get; set; }
         public UpdateImageFormViewModel()
         {
         }
 
-        public UpdateImageFormViewModel(ImageType imageType, int order)
+        public UpdateImageFormViewModel(ImageType imageType, IFormFile? inputFile, DateTime date)
         {
             ImageType = imageType;
-            this.Order = order; 
+            InputFile = inputFile;
+            Date = date;
+        }
+
+        public UpdateImageFormViewModel(ImageType imageType, DateTime date)
+        {
+            ImageType = imageType;
+            this.Date = date; 
         }
     }
 }

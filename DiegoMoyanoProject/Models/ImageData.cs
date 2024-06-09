@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Reflection.Metadata;
 
 namespace DiegoMoyanoProject.Models
 {
@@ -17,31 +18,28 @@ namespace DiegoMoyanoProject.Models
     }
     public class ImageData
     {
-        private string path;
-        private ImageType imageType;
-        private int order;
+        private DateTime _dateUploaded;
+        private ImageFile? _sales;
+        private ImageFile? _spentMoney;
+        private ImageFile? _campaings;
+        private ImageFile? _listings;
+        private ImageFile? _totaCampaigns;
 
         public ImageData()
         {
         }
 
-        public ImageData(string path, ImageType imageType, int order)
+        public ImageData(DateTime dateUploaded)
         {
-            this.path = path;
-            this.imageType = imageType;
-            this.order = order;
+            _dateUploaded = dateUploaded;
         }
 
-        public string Path { get => path; set => path = value; }
-        public ImageType ImageType { get => imageType; set => imageType = value; }
-        public int Order { get => order; set => order = value; }
-
-        public string GetImageTypeDescription()
-        {
-            var field = imageType.GetType().GetField(imageType.ToString());
-            var attribute = (DescriptionAttribute)Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute));
-            return attribute == null ? imageType.ToString() : attribute.Description;
-        }
-
+        public DateTime DateUploaded { get => _dateUploaded; set => _dateUploaded = value; }
+        public ImageFile? Sales { get => _sales; set => _sales = value; }
+        public ImageFile? SpentMoney { get => _spentMoney; set => _spentMoney = value; }
+        public ImageFile? Campaings { get => _campaings; set => _campaings = value; }
+        public ImageFile? Listings { get => _listings; set => _listings = value; }
+        public ImageFile? TotaCampaigns { get => _totaCampaigns; set => _totaCampaigns = value; }
+        static public List<ImageType> AllTypes = new List<ImageType> { ImageType.Sales, ImageType.SpentMoney, ImageType.Campaigns, ImageType.Listings, ImageType.TotalCampaigns };
     }
 }

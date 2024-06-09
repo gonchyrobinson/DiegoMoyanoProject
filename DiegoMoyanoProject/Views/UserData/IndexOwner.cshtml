@@ -1,161 +1,73 @@
 ﻿@model DiegoMoyanoProject.ViewModels.UserData.IndexOwnerUserDataViewModel;
 @using System.ComponentModel;
 <div class="container text-center">
-    <h1 class="display-4">Datos de Usuario</h1>
+    <h1 class="display-4">Datos de Usuario de @Model.SelectedDate.ToString("MMMM") de @Model.SelectedDate.ToString("yyyy")</h1>
 </div>
-
 <div class="gallery container row" onclick="openLightbox(event)">
-    <div class="container text-center col-lg-4 col-md-6 col-sm-12">
-        @if (Model.Sales != null)
-        {
-
-            <img src="@Model.Sales.Path"
-                 alt="@Model.Sales.ImageType" class="img-fluid rounded border border-dark">
-        }
-        else
-        {
-            <img src="~/img/UserData/noImage.jpg"
-                 alt="No image" class="img-fluid rounded border border-dark">
-        }
-        <h5 class="text-primary font-weight-bold">@Model.GetImageTypeDescription(ImageType.Sales)</h5>
-        <ul class="action-list list-unstyled list-inline">
-            @if (Model.Sales != null)
+    @foreach (var img in Model.Images)
+    {
+        <div class="container text-center col-lg-4 col-md-6 col-sm-12">
+            @if (img.Blob64img != null && img.Blob64img != "")
             {
-                <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-type="@ImageType.Sales" data-tip="edit" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
-                <li><a asp-controller="UserData" asp-action="UpdateImageForm" asp-route-type="@ImageType.Sales" asp-route-order="@Model.Sales.Order" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
-                <li><a asp-controller="UserData" asp-action="Delete" asp-route-type="@ImageType.Sales" asp-route-order="@Model.Sales.Order" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+
+                <img src="@img.Blob64img"
+                     alt="@img.ImageType.ToString()" class="img-fluid rounded border border-dark">
             }
             else
             {
-                <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-type="@ImageType.Sales" data-tip="edit" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
+                <img src="~/img/UserData/noImage.jpg"
+                     alt="No image" class="img-fluid rounded border border-dark">
             }
+            <h5 class="text-primary font-weight-bold">@img.GetImageTypeDescription()</h5>
+            <ul class="action-list list-unstyled list-inline">
+                @if (img.Blob64img != null)
+                {
+                    <li><a asp-controller="UserData" asp-action="UpdateImageForm" asp-route-type="@img.ImageType" asp-route-date="@Model.SelectedDate" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
+                    <li><a asp-controller="UserData" asp-action="Delete" asp-route-date="@Model.SelectedDate.ToShortDateString()" asp-route-type="@img.ImageType" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+                }
+                else
+                {
+                    if (Model.Dates.Count() > 0)
+                    {
+                        <li><a asp-controller="UserData" asp-action="UpdateImageForm" asp-route-type="@img.ImageType" asp-route-date="@Model.SelectedDate" data-tip="edit" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
+                    }
+                }
+            </ul>
+        </div>
+    }
+    <div class="container text-center col-12">
+        <ul class="list-group list-unstyled d-flex flex-row flex-wrap justify-content-center">
+            <li class="border m-2 border-primary rounded"><a asp-controller="UserData" asp-action="Upload" asp-route-date="@DateTime.Today.ToShortDateString()" class="text-decoration-none list-group-item btn btn-outline-warning btn-lg px-5 py-3 fs-6 fw-bolder">Agregar nuevos datos</a></li>
         </ul>
     </div>
+    @if (Model.Dates.Count() > 0)
+    {
+        <div class="container text-center" id="dates-container3">
+            <ul class="list-group list-unstyled d-flex flex-row flex-wrap justify-content-center">
+                @foreach (var date in Model.Dates)
+                {
+                    <li class="border m-2 border-primary rounded">
+                        <a asp-controller="UserData" asp-action="IndexOwner" asp-route-date="@date.ToString("yyyy-MM-dd")" class="text-decoration-none list-group-item btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder">
+                            @date.ToString("yyyy-MM-dd")
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+    <!-- Lightbox container -->
+    <div id="lightbox3">
+        <span id="close-btn3" onclick="closeLightbox()">&times;</span>
 
-    <div class="container text-center col-lg-4 col-md-6 col-sm-12">
-        @if (Model.Campaigns != null)
-        {
+        <!-- Main lightbox image -->
+        <img id="lightbox-img3" src="" alt="lightbox image">
 
-            <img src="@Model.Campaigns.Path"
-                 alt="@Model.Campaigns.ImageType" class="img-fluid rounded border border-dark">
-        }
-        else
-        {
-            <img src="~/img/UserData/noImage.jpg"
-                 alt="No image" class="img-fluid rounded border border-dark">
-        }
-        <h5 class="text-primary font-weight-bold">@Model.GetImageTypeDescription(ImageType.Campaigns)</h5>
-        <ul class="action-list list-unstyled list-inline">
-            @if (Model.Campaigns != null)
-            {
+        <!-- Thumbnails container -->
+        <div id="thumbnail-container3">
+            <!-- Thumbnails will be added dynamically using JavaScript -->
+        </div>
 
-                <li><a asp-controller="UserData" asp-action="UploadImageForm"  asp-route-type="@ImageType.Campaigns" data-tip="add" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
-                <li><a asp-controller="UserData" asp-action="UpdateImageForm" asp-route-order="@Model.Campaigns.Order" asp-route-type="@ImageType.Campaigns" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
-                <li><a asp-controller="UserData" asp-action="Delete" asp-route-order="@Model.Campaigns.Order" asp-route-type="@ImageType.Campaigns" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
-            }
-            else
-            {
-                <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-type="@ImageType.Campaigns" data-tip="add" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
-            }
-        </ul>
+        <!-- Previous and Next buttons -->
+        <button id="prev-btn3" onclick="changeImage(-1)">&lt; Prev</button>
+        <button id="next-btn3" onclick="changeImage(1)">Next &gt;</button>
     </div>
-    <div class="container text-center col-lg-4 col-md-6 col-sm-12">
-        @if (Model.SpentMoney != null)
-        {
-
-            <img src="@Model.SpentMoney.Path"
-                 alt="@Model.SpentMoney.ImageType" class="img-fluid rounded border border-dark">
-        }
-        else
-        {
-            <img src="~/img/UserData/noImage.jpg"
-                 alt="No image" class="img-fluid rounded border border-dark">
-        }
-        <h5 class="text-primary font-weight-bold">@Model.GetImageTypeDescription(ImageType.SpentMoney)</h5>
-        <ul class="action-list list-unstyled list-inline">
-            @if (Model.SpentMoney != null)
-            {
-
-                <li><a asp-controller="UserData" asp-action="UploadImageForm"  asp-route-type="@ImageType.SpentMoney" data-tip="add" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
-                <li><a asp-controller="UserData" asp-action="UpdateImageForm" asp-route-order="@Model.SpentMoney.Order" asp-route-type="@ImageType.SpentMoney" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
-                <li><a asp-controller="UserData" asp-action="Delete" asp-route-order="@Model.SpentMoney.Order" asp-route-type="@ImageType.SpentMoney" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
-            }
-            else
-            {
-                <li><a asp-controller="UserData" asp-action="UploadImageForm"  asp-route-type="@ImageType.SpentMoney" data-tip="edit" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
-
-            }
-        </ul>
-    </div>
-    <div class="container text-center col-lg-4 col-md-6 col-sm-12">
-        @if (Model.Listings != null)
-        {
-
-            <img src="@Model.Listings.Path"
-                 alt="@Model.Listings.ImageType" class="img-fluid rounded border border-dark">
-        }
-        else
-        {
-            <img src="~/img/UserData/noImage.jpg"
-                 alt="No image" class="img-fluid rounded border border-dark">
-        }
-        <h5 class="text-primary font-weight-bold">@Model.GetImageTypeDescription(ImageType.Listings)</h5>
-        <ul class="action-list list-unstyled list-inline">
-            @if (Model.Listings != null)
-            {
-                <li><a asp-controller="UserData" asp-action="UploadImageForm"  asp-route-type="@ImageType.Listings" data-tip="add" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
-                <li><a asp-controller="UserData" asp-action="UpdateImageForm" asp-route-order="@Model.Listings.Order" asp-route-type="@ImageType.Listings" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
-                <li><a asp-controller="UserData" asp-action="Delete" asp-route-order="@Model.Listings.Order" asp-route-type="@ImageType.Listings" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
-            }
-            else
-            {
-                <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-type="@ImageType.Listings" data-tip="edit" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
-            }
-        </ul>
-    </div>
-
-</div>  
-<div class="container text-center col-lg-4 col-md-6 col-sm-12">
-        @if (Model.TotalCampaigns != null)
-        {
-
-            <img src="@Model.TotalCampaigns.Path"
-                 alt="@Model.TotalCampaigns.ImageType" class="img-fluid rounded border border-dark">
-        }
-        else
-        {
-            <img src="~/img/UserData/noImage.jpg"
-                 alt="No image" class="img-fluid rounded border border-dark">
-        }
-        <h5 class="text-primary font-weight-bold">@Model.GetImageTypeDescription(ImageType.TotalCampaigns)</h5>
-        <ul class="action-list list-unstyled list-inline">
-            @if (Model.TotalCampaigns != null)
-            {
-                <li><a asp-controller="UserData" asp-action="UploadImageForm"  asp-route-type="@ImageType.TotalCampaigns" data-tip="add" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
-                <li><a asp-controller="UserData" asp-action="UpdateImageForm" asp-route-order="@Model.TotalCampaigns.Order" asp-route-type="@ImageType.TotalCampaigns" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
-                <li><a asp-controller="UserData" asp-action="Delete" asp-route-order="@Model.TotalCampaigns.Order" asp-route-type="@ImageType.TotalCampaigns" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
-            }
-            else
-            {
-                <li><a asp-controller="UserData" asp-action="UploadImageForm" asp-route-type="@ImageType.TotalCampaigns" data-tip="edit" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
-            }
-        </ul>
-    </div>
-</div>
-
-<!-- Lightbox container -->
-<div id="lightbox">
-    <span id="close-btn" onclick="closeLightbox()">&times;</span>
-
-    <!-- Main lightbox image -->
-    <img id="lightbox-img" src="" alt="lightbox image">
-
-    <!-- Thumbnails container -->
-    <div id="thumbnail-container">
-        <!-- Thumbnails will be added dynamically using JavaScript -->
-    </div>
-
-    <!-- Previous and Next buttons -->
-    <button id="prev-btn" onclick="changeImage(-1)">&lt; Prev</button>
-    <button id="next-btn" onclick="changeImage(1)">Next &gt;</button>
-</div>

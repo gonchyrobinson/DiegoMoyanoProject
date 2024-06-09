@@ -24,7 +24,7 @@ namespace DiegoMoyanoProject.Mapper
             CreateMap<User, UserOfIndexUserViewModel>().
             ReverseMap();
 
-            CreateMap<ImageData, ImageDataViewModel>().
+            CreateMap<ImageFile, ImageDataViewModel>().
             ReverseMap();
 
             CreateMap<ImageData, UploadImageFormViewModel>().

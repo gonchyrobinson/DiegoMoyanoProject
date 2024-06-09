@@ -14224,7 +14224,7 @@ textarea.form-control-lg {
     }
 
 /* Lightbox styles */
-#lightbox, #lightbox2 {
+#lightbox, #lightbox2, #lightbox3 {
     display: none;
     position: fixed;
     top: 0;
@@ -14238,14 +14238,14 @@ textarea.form-control-lg {
     flex-direction: column;
 }
 
-    #lightbox img, #lightbox2 img {
+    #lightbox img, #lightbox2 img, #lightbox3 img {
         max-width: 80%;
         max-height: 60vh;
         box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
         border-radius: 10px;
     }
 
-#close-btn, #close-btn2 {
+#close-btn, #close-btn2, #close-btn3 {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -14258,7 +14258,8 @@ textarea.form-control-lg {
 /* Style for navigation buttons */
 #prev-btn,
 #next-btn, #prev-btn2,
-#next-btn2 {
+#next-btn2, #prev-btn3,
+#next-btn3 {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -14271,17 +14272,18 @@ textarea.form-control-lg {
     transition: background-color 0.3s;
 }
 
-#prev-btn, #prev-btn2 {
+#prev-btn, #prev-btn2, #prev-btn3 {
     left: 10px;
 }
 
-#next-btn, #next-btn2 {
+#next-btn, #next-btn2, #next-btn3 {
     right: 10px;
 }
 
     #prev-btn:hover,
     #next-btn:hover, #prev-btn2:hover,
-    #next-btn2:hover {
+    #next-btn2:hover, #prev-btn3:hover,
+    #next-btn3:hover {
         background-color: rgba(0, 0, 0, 0.8);
     }
 
@@ -14333,8 +14335,8 @@ textarea.form-control-lg {
             display: block;
             margin-right: 1rem;
         }
-#dates-container{
-    opacity:1;
+#dates-container, #dates-container3{
+    opacity: 1;
 }
 /* Unordered list with custom numbers style */
 ol.custom-numbers {

@@ -1,25 +1,26 @@
-﻿using DiegoMoyanoProject.Repository;
-using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
 using DiegoMoyanoProject.Exceptions;
 using DiegoMoyanoProject.Models;
-using AutoMapper;
+using DiegoMoyanoProject.Repository;
 using DiegoMoyanoProject.ViewModels.UserData;
-using System.IO;
+using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DiegoMoyanoProject.Controllers
 {
     public class UserDataController : Controller
     {
-        private readonly IUserDataRepository _userDataRepository;
+        private readonly IImagesRepository _imagesRepository;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ILogger<UserDataController> _logger;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
 
-        public UserDataController(IUserDataRepository userDataRepository, IUserRepository userRepository, IWebHostEnvironment webHostEnvironment, ILogger<UserDataController> logger, IMapper mapper)
+        public UserDataController(IImagesRepository imagesRepository, IUserRepository userRepository, IWebHostEnvironment webHostEnvironment, ILogger<UserDataController> logger, IMapper mapper)
         {
-            _userDataRepository = userDataRepository;
+            _imagesRepository = imagesRepository;
             _userRepository = userRepository;
             _webHostEnvironment = webHostEnvironment;
             _logger = logger;
@@ -31,13 +32,14 @@ namespace DiegoMoyanoProject.Controllers
             try
             {
                 if (IsNotLogued()) return RedirectToAction("Index", "Login");
-                if (IsOwner()) return RedirectToAction("IndexOwner");
 
                 //Si quiero modificar para que se vea el último registro cargado, descomentar y retornar View(IndexUserDataVm)
                 //var listImages = _userDataRepository.GetUserImages();
                 //var listImagesVm = _mapper.Map<List<ImageDataViewModel>>(listImages);
-                var listDates = _userDataRepository.GetAllDates();
-                return RedirectToAction("IndexDate", new {date = listDates.Max()});
+                var listDates = _imagesRepository.GetAllDates();
+                var maxDate = (listDates.Count() > 0) ? listDates.Max() : DateTime.Today;
+                if (IsOwner()) return RedirectToAction("IndexOwner", new { date = maxDate });
+                return RedirectToAction("IndexDate", new { date = maxDate });
             }
             catch (Exception ex)
             {
@@ -51,10 +53,15 @@ namespace DiegoMoyanoProject.Controllers
             {
                 if (IsNotLogued()) return RedirectToAction("Index", "Login");
                 if (!ModelState.IsValid) throw (new ModelStateInvalidException());
-                var listImages = _userDataRepository.GetUserImages(date);
+                var listImages = new List<ImageFile>();
+                foreach (var type in ImageData.AllTypes)
+                {
+                    var img = _imagesRepository.getImage(date, type);
+                    if (img != null) listImages.Add(img);
+                }
                 var listImagesVm = _mapper.Map<List<ImageDataViewModel>>(listImages);
-                var listDates = _userDataRepository.GetAllDates();
-                return View(new IndexDateUserDataViewModel(listImagesVm, listDates,date));
+                var listDates = _imagesRepository.GetAllDates();
+                return View(new IndexDateUserDataViewModel(listImagesVm, listDates, date));
             }
             catch (Exception ex)
             {
@@ -63,18 +70,28 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
         [HttpGet]
-        public IActionResult IndexOwner()
+        public IActionResult IndexOwner(DateTime date)
         {
             try
             {
-                if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                var vm = new IndexOwnerUserDataViewModel();
-                vm.Sales = _userDataRepository.GetImage(ImageType.Sales, 1);
-                vm.SpentMoney = _userDataRepository.GetImage(ImageType.SpentMoney, 1);
-                vm.Campaigns = _userDataRepository.GetImage(ImageType.Campaigns, 1);
-                vm.Listings = _userDataRepository.GetImage(ImageType.Listings, 1);
-                vm.TotalCampaigns = _userDataRepository.GetImage(ImageType.TotalCampaigns, 1);
-                return View(vm);
+                if (IsNotLogued()) return RedirectToAction("Index", "Login");
+                if (!ModelState.IsValid) throw (new ModelStateInvalidException());
+                if (!IsOwner()) return RedirectToAction("IndexDate", new { date = date });
+                var listImages = new List<ImageFile>();
+                foreach (var type in ImageData.AllTypes)
+                {
+                    var img = _imagesRepository.getImage(date, type);
+                    if (img == null) img = new ImageFile(type);
+                    listImages.Add(img);
+                }
+                var listImagesVm = _mapper.Map<List<ImageDataViewModel>>(listImages);
+                var listDates = _imagesRepository.GetAllDates();
+                return View(new IndexOwnerUserDataViewModel(listImagesVm, listDates, date));
+            }
+            catch (noDateException ex)
+            {
+                _logger.LogError(ex.Message);
+                return RedirectToAction("Upload", new { date = DateTime.Today });
             }
             catch (Exception ex)
             {
@@ -83,12 +100,12 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
         [HttpGet]
-        public IActionResult UploadImageForm(ImageType type)
+        public IActionResult UpdateImageForm(ImageType type, DateTime date)
         {
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                return View(new UploadImageFormViewModel(type));
+                return View(new UpdateImageFormViewModel(type, date));
             }
             catch (Exception ex)
             {
@@ -97,26 +114,20 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
         [HttpGet]
-        public IActionResult UpdateImageForm(ImageType type, int order)
+        public IActionResult Delete(string date, ImageType type)
         {
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                return View(new UpdateImageFormViewModel(type, order));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return BadRequest();
-            }
-        }
-        public IActionResult Delete(int order, ImageType type)
-        {
-            try
-            {
-                if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                DeleteImage(order, type);
-                return RedirectToAction("IndexOwner");
+                DateTime dateTime;
+
+                if (DateTime.TryParse(date,out dateTime))
+                {
+                    _imagesRepository.Delete(dateTime, type);
+
+                }
+                    return RedirectToAction("Index");
+
             }
             catch (Exception ex)
             {
@@ -125,38 +136,20 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
 
-        private void DeleteImage(int order, ImageType type)
-        {
-            var image = _userDataRepository.GetImage(type, order);
-            if (image != null)
-            {
-                _userDataRepository.DeleteImage(type, order);
-                _userDataRepository.ReduceOrder(type);
-                string completePath = Path.Combine(_webHostEnvironment.WebRootPath, image.Path.Substring(1));
-                System.IO.File.Delete(completePath);
-            }
-        }
-
-        [HttpPost]
-        public IActionResult Upload(UploadImageFormViewModel model)
+        [HttpGet]
+        public IActionResult Upload(string date)
         {
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
                 if (!ModelState.IsValid) throw (new ModelStateInvalidException());
-                if (model.InputFile == null) return RedirectToAction("IndexOnwer");
-                DateTime todayDate = DateTime.Today;
-                var fileExtension = Path.GetExtension(model.InputFile.FileName);
-                string fileNameWithOutExtension = model.ImageType.ToString() + '_' + todayDate.ToString("ddMMyyyy") + "_" + DateTime.Now.ToString("HHmmss");
-                string fileName = fileNameWithOutExtension + fileExtension;
-                string rutaGuardar = Path.Combine(_webHostEnvironment.WebRootPath, "usersData", model.ImageType.ToString());
-                string networkPath = "/usersData/" + model.ImageType.ToString();
-                if (!Directory.Exists(rutaGuardar)) Directory.CreateDirectory(rutaGuardar);
-                string filePath = Path.Combine(rutaGuardar, fileName);
-                string fileNetworkPath = networkPath + "/" + fileName;
-                DeleteFilesOfLastOrder(model, fileNameWithOutExtension, rutaGuardar);
-                SaveImageInCreatedFolderAndUploadInDB(model, filePath, fileNetworkPath);
-                return RedirectToAction("IndexOwner");
+                DateTime dateTime;
+
+                if (DateTime.TryParse(date, out dateTime))
+                {
+                    _imagesRepository.AddDate(dateTime);
+                }
+                    return RedirectToAction("Index");
             }
             catch (InconsistenceInTheDBException ex)
             {
@@ -169,52 +162,24 @@ namespace DiegoMoyanoProject.Controllers
                 return BadRequest();
             }
         }
-
-        private void SaveImageInCreatedFolderAndUploadInDB(UploadImageFormViewModel model, string filePath, string fileNetworkPath)
-        {
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                model.InputFile.CopyTo(stream);
-                ImageData userData = _mapper.Map<ImageData>(model);
-                userData.Order = 1;
-                userData.Path = fileNetworkPath;
-                //I add an order, because, the inserted image, now should be at order 1
-                _userDataRepository.AddOrder(model.ImageType);
-                _userDataRepository.UploadImage(userData);
-            }
-        }
-
-        private void DeleteFilesOfLastOrder(UploadImageFormViewModel model, string fileNameWithOutExtension, string rutaGuardar)
-        {
-            var deleteImage = _userDataRepository.GetImage(model.ImageType, 3);
-            if (deleteImage != null)
-            {
-                //Save the path like this, to delete inicial / in the path
-                System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, deleteImage.Path.Substring(1)));
-                _userDataRepository.DeleteImage(model.ImageType, 3);
-
-            }
-        }
         [HttpPost]
-        public IActionResult Update(UpdateImageFormViewModel model)
+        public async Task<IActionResult> Update(UpdateImageFormViewModel model)
         {
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
                 if (!ModelState.IsValid) throw (new ModelStateInvalidException());
-                if (model.InputFile == null) return RedirectToAction("IndexOnwer");
-                DateTime todayDate = DateTime.Today;
-                var fileExtension = Path.GetExtension(model.InputFile.FileName);
-                string fileNameWithOutExtension = model.ImageType.ToString() + '_' + todayDate.ToString("ddMMyyyy") + "_" + DateTime.Now.ToString("HHmmss");
-                string fileName = fileNameWithOutExtension + fileExtension;
-                string rutaGuardar = Path.Combine(_webHostEnvironment.WebRootPath, "usersData", model.ImageType.ToString());
-                string networkPath = "/usersData/" + model.ImageType.ToString();
-                if (!Directory.Exists(rutaGuardar)) Directory.CreateDirectory(rutaGuardar);
-                string filePath = Path.Combine(rutaGuardar, fileName);
-                string fileNetworkPath = networkPath + "/" + fileName;
-                DeleteImageFromLocalEnviorment(model);
-                SaveImageInCreatedFolderAnUpdateInDB(model, filePath, fileNetworkPath);
-                return RedirectToAction("IndexOwner");
+                if (model.InputFile == null) return RedirectToAction("Index");
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    IFormFile file = (IFormFile)model.InputFile;
+                    await (file.CopyToAsync(memoryStream));
+                    var img = Convert.ToBase64String(memoryStream.ToArray());
+                    var type = Path.GetExtension(model.InputFile.FileName).Split('.').Last();
+                    _imagesRepository.Update(new ImageFile(type, img, model.ImageType), model.Date);
+
+                }
+                return RedirectToAction("IndexOwner",new {date = model.Date});
             }
             catch (InconsistenceInTheDBException ex)
             {
@@ -253,42 +218,19 @@ namespace DiegoMoyanoProject.Controllers
         {
             try
             {
-                if(IsOperative())
+                if (IsOperative())
                 {
                     return RedirectToAction("ViewInversion", new { id = IdLoguedUser() });
                 }
                 else
                 {
-                    return RedirectToRoute(new{ Controller="User",action="Index"});
+                    return RedirectToRoute(new { Controller = "User", action = "Index" });
                 }
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 _logger.LogError(e.Message);
                 return BadRequest();
-            }
-        }
-        private void DeleteImageFromLocalEnviorment(UpdateImageFormViewModel model)
-        {
-            var deleteImage = _userDataRepository.GetImage(model.ImageType, model.Order);
-            if (deleteImage != null)
-            {
-
-                System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, deleteImage.Path.Substring(1)));
-            }
-            else
-            {
-                throw new InconsistenceInTheDBException("Existe mas de una imagen para un mismo usuario");
-            }
-        }
-
-        private void SaveImageInCreatedFolderAnUpdateInDB(UpdateImageFormViewModel model, string filePath, string fileNetworkPath)
-        {
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                model.InputFile.CopyTo(stream);
-                ImageData userData = _mapper.Map<ImageData>(model);
-                userData.Path = fileNetworkPath;
-                _userDataRepository.UpdateImage(userData, model.Order);
             }
         }
 
@@ -318,3 +260,4 @@ namespace DiegoMoyanoProject.Controllers
         }
     }
 }
+

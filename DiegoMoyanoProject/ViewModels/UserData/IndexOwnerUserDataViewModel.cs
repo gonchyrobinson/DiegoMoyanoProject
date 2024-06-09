@@ -4,20 +4,16 @@ using System.ComponentModel;
 namespace DiegoMoyanoProject.ViewModels.UserData
 {
     public class IndexOwnerUserDataViewModel
-    { 
-        public List<DateTime> Dates {  get; set; }
-        public ImageData? Sales {  get; set; }
-        public ImageData? SpentMoney { get; set; }  
-        public ImageData? Campaigns { get; set; }
-        public ImageData? Listings { get; set; }
-        public ImageData? TotalCampaigns { get; set; }
+    {
+        public List<ImageDataViewModel> Images { get; set; }
+        public DateTime SelectedDate { get; set; }
+        public List<DateTime> Dates { get; set; }
         public IndexOwnerUserDataViewModel() { }
-        public string GetImageTypeDescription(ImageType img)
+        public IndexOwnerUserDataViewModel(List<ImageDataViewModel> images, List<DateTime> dates, DateTime date)
         {
-            var field = img.GetType().GetField(img.ToString());
-            var attribute = (DescriptionAttribute)Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute));
-            return attribute == null ? img.ToString() : attribute.Description;
+            Images = images;
+            Dates = dates;
+            SelectedDate = date;
         }
-
     }
 }
