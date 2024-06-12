@@ -8,7 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDistributedMemoryCache();
-CultureInfo.CurrentCulture = new CultureInfo("es-ES");
+CultureInfo.CurrentCulture = new CultureInfo("en-US");
+
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromSeconds(1200);
@@ -27,7 +29,19 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IImagesRepository, ImagesRepository>();
 builder.Services.AddScoped<IUserPdfRepository, UserPdfRepository>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+
+
+var supportedCultures = new[] { "en-US" }; // replace with your preferred cultures
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.SetDefaultCulture(supportedCultures[0])
+           .AddSupportedCultures(supportedCultures)
+           .AddSupportedUICultures(supportedCultures);
+});
+
 var app = builder.Build();
+
+app.UseRequestLocalization();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

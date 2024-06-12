@@ -9,11 +9,11 @@
     <div class="gallery container row" onclick="openLightbox(event)">
         @foreach (var img in Model.Images)
         {
-            if (img.Blob64img != null && img.Blob64img != "")
+            if (img.Path != null && img.Path != "")
             {
 
                 <div class="container text-center col-lg-4 col-md-6 col-sm-12">
-                    <img src="@img.Blob64img"
+                    <img src="@img.Path"
                          alt="@img.GetImageTypeDescription()" class="img-fluid rounded border border-dark">
 
                     <h5 class="text-primary font-weight-bold">@img.GetImageTypeDescription()</h5>

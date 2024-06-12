@@ -4,6 +4,7 @@ using DiegoMoyanoProject.Models;
 using DiegoMoyanoProject.Repository;
 using DiegoMoyanoProject.ViewModels.UserData;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Storage;
 using System.Globalization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -16,7 +17,7 @@ namespace DiegoMoyanoProject.Controllers
         private readonly ILogger<UserDataController> _logger;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-
+        private readonly string folderName;
 
         public UserDataController(IImagesRepository imagesRepository, IUserRepository userRepository, IWebHostEnvironment webHostEnvironment, ILogger<UserDataController> logger, IMapper mapper)
         {
@@ -25,6 +26,7 @@ namespace DiegoMoyanoProject.Controllers
             _webHostEnvironment = webHostEnvironment;
             _logger = logger;
             _mapper = mapper;
+            folderName = "usersData";
         }
         [HttpGet]
         public IActionResult Index()
@@ -82,9 +84,18 @@ namespace DiegoMoyanoProject.Controllers
                 {
                     var img = _imagesRepository.getImage(date, type);
                     if (img == null) img = new ImageFile(type);
+                    _logger.LogInformation("Imagen obtenida de la DB de " + type.ToString() + " :   " + img.Path+"  .  La fecha en el formato enviado es: "+date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture));
                     listImages.Add(img);
                 }
-                var listImagesVm = _mapper.Map<List<ImageDataViewModel>>(listImages);
+                var listImagesVm = new List<ImageDataViewModel>();
+                //var listImagesVm = _mapper.Map<List<ImageDataViewModel>>(listImages);
+                string mensaje = "";
+                foreach (var item in listImages)
+                {
+                    listImagesVm.Add(new ImageDataViewModel(item.Path, item.ImageType));
+                    mensaje += " - "+ item.Path;
+                }
+                _logger.LogInformation("Rutas obtenidas al mapear: " + mensaje);
                 var listDates = _imagesRepository.GetAllDates();
                 return View(new IndexOwnerUserDataViewModel(listImagesVm, listDates, date));
             }
@@ -123,6 +134,7 @@ namespace DiegoMoyanoProject.Controllers
 
                 if (DateTime.TryParse(date,out dateTime))
                 {
+                    DeleteImageFromLocalEnviorment(dateTime, type);
                     _imagesRepository.Delete(dateTime, type);
 
                 }
@@ -147,9 +159,10 @@ namespace DiegoMoyanoProject.Controllers
 
                 if (DateTime.TryParse(date, out dateTime))
                 {
-                    _imagesRepository.AddDate(dateTime);
+                    if (_imagesRepository.deleteOlderIfNeeded()) DeleteImagesFolder(getLocalFolder(dateTime)); 
+                    if(_imagesRepository.AddDate(dateTime)) createFolderForImages(dateTime);
                 }
-                    return RedirectToAction("Index");
+                return RedirectToAction("Index");
             }
             catch (InconsistenceInTheDBException ex)
             {
@@ -162,6 +175,12 @@ namespace DiegoMoyanoProject.Controllers
                 return BadRequest();
             }
         }
+
+        private void DeleteImagesFolder(string directoryPath)
+        {
+            Directory.Delete(directoryPath, true);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Update(UpdateImageFormViewModel model)
         {
@@ -170,16 +189,20 @@ namespace DiegoMoyanoProject.Controllers
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
                 if (!ModelState.IsValid) throw (new ModelStateInvalidException());
                 if (model.InputFile == null) return RedirectToAction("Index");
-                using (MemoryStream memoryStream = new MemoryStream())
-                {
-                    IFormFile file = (IFormFile)model.InputFile;
-                    await (file.CopyToAsync(memoryStream));
-                    var img = Convert.ToBase64String(memoryStream.ToArray());
-                    var type = Path.GetExtension(model.InputFile.FileName).Split('.').Last();
-                    _imagesRepository.Update(new ImageFile(type, img, model.ImageType), model.Date);
+                string filePath, fileNetworkPath;
+                createPathsForSavingTheImages(model.ImageType,model.InputFile.FileName,model.Date, out filePath, out fileNetworkPath);
+                DeleteImageFromLocalEnviorment(model.Date, model.ImageType);
+                SaveImageInCreatedFolderAnUpdateInDB(model, filePath, fileNetworkPath);
+                //using (MemoryStream memoryStream = new MemoryStream())
+                //{
+                //    IFormFile file = (IFormFile)model.InputFile;
+                //    await (file.CopyToAsync(memoryStream));
+                //    var img = Convert.ToBase64String(memoryStream.ToArray());
+                //    var type = Path.GetExtension(model.InputFile.FileName).Split('.').Last();
+                //    _imagesRepository.Update(new ImageFile(type, img, model.ImageType), model.Date);
 
-                }
-                return RedirectToAction("IndexOwner",new {date = model.Date});
+                //}
+                return RedirectToAction("IndexOwner", new { date = model.Date });
             }
             catch (InconsistenceInTheDBException ex)
             {
@@ -191,7 +214,72 @@ namespace DiegoMoyanoProject.Controllers
                 _logger.LogError(ex.Message);
                 return BadRequest();
             }
+        }
 
+        private void createPathsForSavingTheImages(ImageType imageType, string fileNameWithExtension,DateTime date, out string filePath, out string fileNetworkPath)
+        {
+            string rutaGuardar = createFolderForImages(date);
+            string fileName = getFileNameWithExtension(imageType, fileNameWithExtension, date);
+            fileNetworkPath = getFileNetworkPath(date, folderName, fileName);
+            filePath = getLocalFilePath(rutaGuardar, fileName);
+        }
+
+        private static string getLocalFilePath(string pathToLocalFolder, string fileNameWithExtension)
+        {
+            return Path.Combine(pathToLocalFolder, fileNameWithExtension);
+        }
+
+        private static string getFileNetworkPath(DateTime date, string folderName, string fileName)
+        {
+            string networkPath = getNetworkFolder(date, folderName);
+            string fileNetworkPath = networkPath + "/" + fileName;
+            return fileNetworkPath;
+        }
+
+        private static string getNetworkFolder(DateTime date, string folderName)
+        {
+            return "/" + folderName + "/" + date.ToString("ddMMyyyy");
+        }
+
+        private static string getFileNameWithExtension(ImageType imageType, string fileNameWithExtension, DateTime date)
+        {
+            var fileExtension = Path.GetExtension(fileNameWithExtension);
+            string fileNameWithOutExtension = imageType.ToString() + '_' + date.ToString("ddMMyyyy");
+            string fileName = fileNameWithOutExtension + fileExtension;
+            return fileName;
+        }
+
+        private string createFolderForImages(DateTime date)
+        {
+            string rutaGuardar = getLocalFolder(date);
+            if (!Directory.Exists(rutaGuardar)) Directory.CreateDirectory(rutaGuardar);
+            return rutaGuardar;
+        }
+
+        private string getLocalFolder(DateTime date)
+        {
+            return Path.Combine(_webHostEnvironment.WebRootPath, folderName, date.ToString("ddMMyyyy"));
+        }
+
+        private void DeleteImageFromLocalEnviorment(DateTime date, ImageType imageType)
+        {
+            var deleteImage = _imagesRepository.getImage(date, imageType);
+            if (deleteImage != null && deleteImage.Path!="")                System.IO.File.Delete(getLocalPathFromDBReadenPath(deleteImage.Path));
+        }
+
+        private string getLocalPathFromDBReadenPath(string DBPath)
+        {
+            return Path.Combine(_webHostEnvironment.WebRootPath, DBPath.Substring(1));
+        }
+
+        private void SaveImageInCreatedFolderAnUpdateInDB(UpdateImageFormViewModel model, string filePath, string fileNetworkPath)
+        {
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                model.InputFile.CopyTo(stream);
+                ImageFile userData = new ImageFile(fileNetworkPath, model.ImageType);
+                _imagesRepository.Update(userData, model.Date);
+            }
         }
 
         [HttpGet]

@@ -7,10 +7,10 @@
     @foreach (var img in Model.Images)
     {
         <div class="container text-center col-lg-4 col-md-6 col-sm-12">
-            @if (img.Blob64img != null && img.Blob64img != "")
+            @if (img.Path != null && img.Path != "")
             {
 
-                <img src="@img.Blob64img"
+                <img src="@img.Path"
                      alt="@img.ImageType.ToString()" class="img-fluid rounded border border-dark">
             }
             else
@@ -20,7 +20,7 @@
             }
             <h5 class="text-primary font-weight-bold">@img.GetImageTypeDescription()</h5>
             <ul class="action-list list-unstyled list-inline">
-                @if (img.Blob64img != null && img.Blob64img!="")
+                @if (img.Path != null && img.Path!="")
                 {
                     <li><a asp-controller="UserData" asp-action="UpdateImageForm" asp-route-type="@img.ImageType" asp-route-date="@Model.SelectedDate" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
                     <li><a asp-controller="UserData" asp-action="Delete" asp-route-date="@Model.SelectedDate.ToShortDateString()" asp-route-type="@img.ImageType" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>

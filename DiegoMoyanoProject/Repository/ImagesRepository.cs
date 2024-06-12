@@ -1,6 +1,8 @@
 ﻿using DiegoMoyanoProject.Exceptions;
 using DiegoMoyanoProject.Models;
 using Microsoft.Data.Sqlite;
+using SQLitePCL;
+using System.Globalization;
 namespace DiegoMoyanoProject.Repository
 {
     public class ImagesRepository : IImagesRepository
@@ -13,13 +15,12 @@ namespace DiegoMoyanoProject.Repository
         }
         public bool AddDate(DateTime date)
         {
-            this.deleteOlderIfNeeded();
             string queryString = "INSERT INTO Images(dateUploaded) VALUES(@date)";
             bool inserted = false;
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@date", date.ToShortDateString()));
+                command.Parameters.Add(new SqliteParameter("@date", date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)));
                 connection.Open();
                 inserted = command.ExecuteNonQuery() > 0;
                 connection.Close();
@@ -35,7 +36,7 @@ namespace DiegoMoyanoProject.Repository
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@date", date.ToShortDateString()));
+                command.Parameters.Add(new SqliteParameter("@date", date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)));
                 connection.Open();
                 updated = command.ExecuteNonQuery() > 0;
                 connection.Close();
@@ -45,12 +46,12 @@ namespace DiegoMoyanoProject.Repository
 
         public ImageFile? getImage(DateTime date, ImageType type)
         {
-            string queryString = "SELECT " + type.ToString() + " FROM Images WHERE dateUploaded = @date";
+            string queryString = "SELECT " + type.ToString() + " FROM Images WHERE dateUploaded like @date";
             ImageFile? image = null;
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@date", date.ToShortDateString()));
+                command.Parameters.Add(new SqliteParameter("@date", date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)));
                 connection.Open();
                 var reader = command.ExecuteScalar();
                 if (reader != null) image = new ImageFile(reader.ToString(), type);
@@ -66,8 +67,8 @@ namespace DiegoMoyanoProject.Repository
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@newImg", img.Blob64img));
-                command.Parameters.Add(new SqliteParameter("@date", date.ToShortDateString()));
+                command.Parameters.Add(new SqliteParameter("@newImg", img.Path));
+                command.Parameters.Add(new SqliteParameter("@date", date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)));
                 connection.Open();
                 updated = command.ExecuteNonQuery() > 0;
                 connection.Close();
@@ -107,7 +108,7 @@ namespace DiegoMoyanoProject.Repository
         }
         public List<DateTime> GetAllDates()
         {
-            string queryString = "SELECT DISTINCT dateUploaded from Images"; ;
+            string queryString = "SELECT dateUploaded from Images"; ;
             List<DateTime> dates = new List<DateTime>();
             using (var connection = new SqliteConnection(_connectionString))
             {
