@@ -1,7 +1,7 @@
 ﻿@model DiegoMoyanoProject.ViewModels.UserData.IndexOwnerUserDataViewModel;
 @using System.ComponentModel;
 <div class="container text-center">
-    <h1 class="display-4">Datos de Usuario de @Model.SelectedDate.ToString("MMMM") de @Model.SelectedDate.ToString("yyyy")</h1>
+    <h1 class="display-4">Datos de Usuario del @Model.SelectedDate.ToString("dd/MM/yyyy")</h1>
 </div>
 <div class="gallery container row" onclick="openLightbox(event)">
     @foreach (var img in Model.Images)
@@ -53,7 +53,7 @@
                                     @imageDate.Date.ToString("yyyy-MM-dd")
                                 </a>
                             </li>
-                            <li><a asp-controller="UserData" asp-action="DeleteRow" asp-route-id="@Model.SelectedId" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+                            <li><a asp-controller="UserData" asp-action="DeleteRow" asp-route-date="@Model.SelectedDate" asp-route-id="@Model.SelectedId" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
 
                         </ul>
                     </li>

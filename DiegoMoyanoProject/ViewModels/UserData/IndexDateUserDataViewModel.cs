@@ -14,7 +14,7 @@ namespace DiegoMoyanoProject.ViewModels.UserData
         {
             Images = images;
             Dates = dates;
-            SelectedDate = date.ToString("MMMM");
+            SelectedDate = date.ToString("dd/MM/yyyy");
         }   
     }
    

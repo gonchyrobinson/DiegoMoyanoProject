@@ -66,7 +66,7 @@ namespace DiegoMoyanoProject.Controllers
                 var listImages = new List<ImageFile>();
                 foreach (var type in ImageData.AllTypes)
                 {
-                    var img = _imagesRepository.getImage(date, type, id);
+                    var img = _imagesRepository.getImage( type, id);
                     if (img != null) listImages.Add(img);
                 }
                 var listImagesVm = _mapper.Map<List<ImageDataViewModel>>(listImages);
@@ -90,7 +90,7 @@ namespace DiegoMoyanoProject.Controllers
                 var listImages = new List<ImageFile>();
                 foreach (var type in ImageData.AllTypes)
                 {
-                    var img = _imagesRepository.getImage(date, type, id);
+                    var img = _imagesRepository.getImage( type, id);
                     if (img == null) img = new ImageFile(type, id);
                     _logger.LogInformation("Imagen obtenida de la DB de " + type.ToString() + " :   " + img.Path + "  .  La fecha en el formato enviado es: " + date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture));
                     listImages.Add(img);
@@ -142,8 +142,8 @@ namespace DiegoMoyanoProject.Controllers
 
                 if (DateTime.TryParse(date, out dateTime))
                 {
-                    DeleteImageFromLocalEnviorment(dateTime, type, id);
-                    _imagesRepository.Delete(dateTime, type, id);
+                    DeleteImageFromLocalEnviorment(type, id);
+                    _imagesRepository.Delete( type, id);
 
                 }
                 return RedirectToAction("Index");
@@ -156,12 +156,12 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
         [HttpGet]
-        public IActionResult DeleteRow(int id)
+        public IActionResult DeleteRow(DateTime date, int id)
         {
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                _imagesRepository.DeleteRow(id);
+                if(_imagesRepository.DeleteRow(id)) DeleteImagesFolder(getLocalFolder(date,id));
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -213,7 +213,7 @@ namespace DiegoMoyanoProject.Controllers
                 if (model.InputFile == null) return RedirectToAction("Index");
                 string filePath, fileNetworkPath;
                 createPathsForSavingTheImages(model.ImageType, model.InputFile.FileName, model.Date, model.Id, out filePath, out fileNetworkPath);
-                DeleteImageFromLocalEnviorment(model.Date, model.ImageType, model.Id);
+                DeleteImageFromLocalEnviorment(model.ImageType, model.Id);
                 SaveImageInCreatedFolderAnUpdateInDB(model, filePath, fileNetworkPath);
                 //using (MemoryStream memoryStream = new MemoryStream())
                 //{
@@ -288,9 +288,9 @@ namespace DiegoMoyanoProject.Controllers
             return Path.Combine(_webHostEnvironment.WebRootPath, folderName, date.ToString("ddMMyyyy") + "_" + id);
         }
 
-        private void DeleteImageFromLocalEnviorment(DateTime date, ImageType imageType, int id)
+        private void DeleteImageFromLocalEnviorment(ImageType imageType, int id)
         {
-            var deleteImage = _imagesRepository.getImage(date, imageType, id);
+            var deleteImage = _imagesRepository.getImage(imageType, id);
             if (deleteImage != null && deleteImage.Path != "") System.IO.File.Delete(getLocalPathFromDBReadenPath(deleteImage.Path));
         }
 
@@ -305,7 +305,7 @@ namespace DiegoMoyanoProject.Controllers
             {
                 model.InputFile.CopyTo(stream);
                 ImageFile userData = new ImageFile(fileNetworkPath, model.ImageType);
-                _imagesRepository.Update(userData, model.Date, model.Id);
+                _imagesRepository.Update(userData, model.Id);
             }
         }
 

@@ -29,14 +29,13 @@ namespace DiegoMoyanoProject.Repository
             return inserted;
         }
 
-        public bool Delete(DateTime date, ImageType type, int id)
+        public bool Delete( ImageType type, int id)
         {
-            string queryString = "UPDATE Images SET " + type.ToString() + " = null WHERE dateUploaded = @date and id = @id";
+            string queryString = "UPDATE Images SET " + type.ToString() + " = null WHERE id = @id";
             bool updated = false;
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@date", date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)));
                 command.Parameters.Add(new SqliteParameter("id", id));
                 connection.Open();
                 updated = command.ExecuteNonQuery() > 0;
@@ -45,14 +44,13 @@ namespace DiegoMoyanoProject.Repository
             return updated;
         }
 
-        public ImageFile? getImage(DateTime date, ImageType type, int id)
+        public ImageFile? getImage(ImageType type, int id)
         {
-            string queryString = "SELECT " + type.ToString() + " FROM Images WHERE dateUploaded like @date and id = @id";
+            string queryString = "SELECT " + type.ToString() + " FROM Images WHERE id = @id";
             ImageFile? image = null;
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@date", date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)));
                 command.Parameters.Add(new SqliteParameter("@id", id));
                 connection.Open();
                 var reader = command.ExecuteScalar();
@@ -62,15 +60,14 @@ namespace DiegoMoyanoProject.Repository
             return image;
         }
 
-        public bool Update(ImageFile img, DateTime date, int id)
+        public bool Update(ImageFile img, int id)
         {
-            string queryString = "UPDATE Images SET " + img.ImageType.ToString() + " = @newImg WHERE dateUploaded = @date and id = @id";
+            string queryString = "UPDATE Images SET " + img.ImageType.ToString() + " = @newImg WHERE  id = @id";
             bool updated = false;
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
                 command.Parameters.Add(new SqliteParameter("@newImg", img.Path));
-                command.Parameters.Add(new SqliteParameter("@date", date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)));
                 command.Parameters.Add(new SqliteParameter("@id", id));
                 connection.Open();
                 updated = command.ExecuteNonQuery() > 0;
@@ -83,7 +80,7 @@ namespace DiegoMoyanoProject.Repository
             bool deleted = false;
             if (this.countImagesAdded() >= maxSupported)
             {
-                string queryString = "DELETE FROM Images WHERE dateUploaded = (SELECT min(dateUploaded) from Images) and id = (select min(id) from Images)";
+                string queryString = "DELETE FROM Images WHERE id = (select min(id) from Images)";
                 using (var connection = new SqliteConnection(_connectionString))
                 {
                     var command = new SqliteCommand(queryString, connection);
