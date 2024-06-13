@@ -8,9 +8,9 @@ namespace DiegoMoyanoProject.ViewModels.UserData
     {
         public List<ImageDataViewModel> Images { get; set; }
         public string SelectedDate { get; set; }
-        public List<DateTime> Dates { get; set; }
+        public List<FileDate> Dates { get; set; }
         public IndexDateUserDataViewModel() { }
-        public IndexDateUserDataViewModel(List<ImageDataViewModel> images, List<DateTime> dates, DateTime date)
+        public IndexDateUserDataViewModel(List<ImageDataViewModel> images, List<FileDate> dates, DateTime date)
         {
             Images = images;
             Dates = dates;

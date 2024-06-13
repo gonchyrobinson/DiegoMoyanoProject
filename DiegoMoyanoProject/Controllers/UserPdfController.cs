@@ -36,10 +36,17 @@ namespace DiegoMoyanoProject.Controllers
             {
                 if (IsNotLogued()) return RedirectToAction("Index", "Login");
                 var listDates = _userPdfRepoository.GetAllDates();
-                DateTime maxDate = DateTime.Today;
-                if (listDates.Count() > 0) maxDate = listDates.Max();
-                if (IsOwner()) return RedirectToAction("IndexOwner", new { date = maxDate });
-                return RedirectToAction("IndexDate", new { date = maxDate });
+                FileDate? maxDate = null;
+                if (listDates.Count() > 0)
+                {
+                    maxDate = listDates.OrderByDescending(obj => obj.Id).FirstOrDefault();
+                }
+                else
+                {
+                    maxDate = new FileDate();
+                }
+                if (IsOwner()) return RedirectToAction("IndexOwner", new { date = maxDate.Date, id = maxDate.Id });
+                return RedirectToAction("IndexDate", new { date = maxDate, id = maxDate.Id });
             }
             catch (Exception ex)
             {
@@ -48,14 +55,14 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
 
-        public IActionResult IndexDate(DateTime date)
+        public IActionResult IndexDate(DateTime date, int id)
         {
             try
             {
                 if (IsNotLogued()) return RedirectToAction("Index", "Login");
-                var pdfNetworkPath = _userPdfRepoository.GetPdf(date);
+                var pdfNetworkPath = _userPdfRepoository.GetPdf(id);
                 var listDates = _userPdfRepoository.GetAllDates();
-                return View(new IndexDateUserPdfViewModel(pdfNetworkPath, listDates));
+                return View(new IndexDateUserPdfViewModel(pdfNetworkPath, listDates, date));
             }
             catch (Exception ex)
             {
@@ -64,14 +71,14 @@ namespace DiegoMoyanoProject.Controllers
             }
         }
         [HttpGet]
-        public IActionResult IndexOwner(DateTime date)
+        public IActionResult IndexOwner(DateTime date, int id)
         {
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
-                var pdf = _userPdfRepoository.GetPdfData(date);
+                var pdf = _userPdfRepoository.GetPdfData(id);
                 var dates = _userPdfRepoository.GetAllDates();
-                return View(new IndexOwnerUserPdfViewModel(pdf, date, dates));
+                return View(new IndexOwnerUserPdfViewModel(pdf, date, dates, id));
             }
             catch (Exception ex)
             {
@@ -81,7 +88,7 @@ namespace DiegoMoyanoProject.Controllers
         }
 
         [HttpGet]
-        public IActionResult UpdatePdfForm(string date)
+        public IActionResult UpdatePdfForm(string date, int id)
         {
             try
             {
@@ -90,7 +97,7 @@ namespace DiegoMoyanoProject.Controllers
 
                 if (DateTime.TryParse(date, out dateTime))
                 {
-                    return View(new UpdatePdfFormViewModel(dateTime));
+                    return View(new UpdatePdfFormViewModel(dateTime, id));
                 }
                 else
                 {
@@ -104,18 +111,16 @@ namespace DiegoMoyanoProject.Controllers
                 return BadRequest();
             }
         }
-        public IActionResult Delete(string date)
+        public IActionResult Delete(string date, int id)
         {
             try
             {
                 if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
                 DateTime dateTime;
 
-                if (DateTime.TryParse(date, out dateTime))
-                {
-                    _userPdfRepoository.DeletePdf(dateTime);
-                }
-                return RedirectToAction("IndexOwner",new {date = dateTime});
+                DateTime.TryParse(date, out dateTime);
+                _userPdfRepoository.DeletePdf(id);
+                return RedirectToAction("IndexOwner",new {date = dateTime, id = id});
             }
             catch (Exception ex)
             {
@@ -136,7 +141,7 @@ namespace DiegoMoyanoProject.Controllers
                     _userPdfRepoository.AddDate(dateTime);
                 }
 
-                return RedirectToAction("IndexOwner", new {date = dateTime});
+                return RedirectToAction("IndexOwner", new { date = dateTime, id = _userPdfRepoository.GetMaxId()});
             }
             catch (InconsistenceInTheDBException ex)
             {
@@ -163,9 +168,9 @@ namespace DiegoMoyanoProject.Controllers
                     IFormFile file = (IFormFile)model.InputFile;
                     await (file.CopyToAsync(memoryStream));
                     // Retorna los bytes del MemoryStream
-                    _userPdfRepoository.UpdatePdf(new PdfData(memoryStream.ToArray()), model.Date);
+                    _userPdfRepoository.UpdatePdf(new PdfData(memoryStream.ToArray(), model.Id), model.Id);
                 }
-                return RedirectToAction("IndexOwner", new {date = model.Date});
+                return RedirectToAction("IndexOwner", new {date = model.Date, id = model.Id});
             }
             catch (InconsistenceInTheDBException ex)
             {
@@ -178,7 +183,21 @@ namespace DiegoMoyanoProject.Controllers
                 return BadRequest();
             }
         }
-
+        [HttpGet]
+        public IActionResult DeleteRow(int id)
+        {
+            try
+            {
+                if (IsNotLogued() || !IsOwner()) return RedirectToAction("Index", "Login");
+                _userPdfRepoository.DeleteRow(id);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
+        }
 
         public FileResult OnGetDownloadFileFromFolder(string pdf)
         {
@@ -196,9 +215,9 @@ namespace DiegoMoyanoProject.Controllers
                 _logger.LogError(ex, $"Error when trying to send PDF to client");
                 throw new BadHttpRequestException("Error al descargar pdf");
             }
-
-
         }
+
+
         private int IdLoguedUser()
         {
             return (int)HttpContext.Session.GetInt32("Id");

@@ -46,11 +46,11 @@ else
 {
     <div class="container text-center">
         <ul class="list-group list-unstyled d-flex flex-row flex-wrap justify-content-center">
-            @foreach (var date in Model.Dates)
+            @foreach (var modelDate in Model.Dates)
             {
                 <li class="border m-2 border-primary rounded">
-                    <a asp-controller="UserPdf" asp-action="IndexDate" asp-route-date="@date.ToString("yyyy-MM-dd")" class="text-decoration-none list-group-item btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder">
-                        @date.ToString("yyyy-MM-dd")
+                    <a asp-controller="UserPdf" asp-action="IndexDate" asp-route-date="@modelDate.Date.ToString("yyyy-MM-dd")" asp-route-id="@modelDate.Id" class="text-decoration-none list-group-item btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder">
+                        @modelDate.Date.ToString("yyyy-MM-dd")
                     </a>
                 </li>
             }

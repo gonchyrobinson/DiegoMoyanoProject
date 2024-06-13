@@ -1,5 +1,6 @@
 ﻿using DiegoMoyanoProject.Models;
 using Microsoft.Data.Sqlite;
+using System.Data;
 
 namespace DiegoMoyanoProject.Repository
 {
@@ -29,15 +30,15 @@ namespace DiegoMoyanoProject.Repository
             if (!inserted) throw (new NotImplementedException("Error cargando los datos"));
             return inserted;
         }
-        public bool UpdatePdf(PdfData pdf, DateTime date)
+        public bool UpdatePdf(PdfData pdf, int id)
         {
-            var queryString = "UPDATE UserPdf SET pdf = @pdf WHERE  date = @date";
+            var queryString = "UPDATE UserPdf SET pdf = @pdf WHERE  id =@id";
             bool inserted = false;
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
                 command.Parameters.Add(new SqliteParameter("@pdf", pdf.Pdf));
-                command.Parameters.Add(new SqliteParameter("@date", date.ToShortDateString()));
+                command.Parameters.Add(new SqliteParameter("@id", id));
                 connection.Open();
                 inserted = command.ExecuteNonQuery() > 0;
                 connection.Close();
@@ -45,29 +46,29 @@ namespace DiegoMoyanoProject.Repository
             return inserted;
         }
 
-        public PdfData? GetPdfData( DateTime date)
+        public PdfData? GetPdfData( int id)
         {
-            string queryString = "SELECT pdf from UserPdf WHERE date = @date Limit 1";
+            string queryString = "SELECT pdf,id from UserPdf WHERE id = @id";
             PdfData? pdf = null;
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@date", date.ToShortDateString()));
+                command.Parameters.Add(new SqliteParameter("@id", id));
                 connection.Open();
-                var reader = command.ExecuteScalar();
-                if (reader != null && reader!=DBNull.Value) pdf = new PdfData((byte[])reader);
+                var reader = command.ExecuteReader();
+                if (reader != null && reader.Read() && !reader.IsDBNull("pdf")) pdf = new PdfData((byte[])reader["pdf"], Convert.ToInt32(reader["id"]));
                 connection.Close();
             }
             return pdf;
         }
-        public byte[]? GetPdf(DateTime date)
+        public byte[]? GetPdf(int id)
         {
-            string queryString = "SELECT pdf from UserPdf WHERE date = @date";
+            string queryString = "SELECT pdf from UserPdf WHERE id = @id";
             byte[]? pdf = null;
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@date", date.ToShortDateString()));
+                command.Parameters.Add(new SqliteParameter("@id", id));
                 connection.Open();
                 var reader = command.ExecuteScalar();
                 if (reader != null && reader!=DBNull.Value) pdf = ((byte[])reader);
@@ -77,14 +78,14 @@ namespace DiegoMoyanoProject.Repository
         }
         
         
-        public bool DeletePdf(DateTime date)
+        public bool DeletePdf(int id)
         {
-            string queryString = "UPDATE UserPdf SET pdf = NULL WHERE  date = @date";
+            string queryString = "UPDATE UserPdf SET pdf = NULL WHERE  id = @id";
             var deleted = false;
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
-                command.Parameters.Add(new SqliteParameter("@date", date.ToShortDateString()));
+                command.Parameters.Add(new SqliteParameter("@id", id));
                 connection.Open();
                 deleted = command.ExecuteNonQuery() > 0;
                 connection.Close();
@@ -92,10 +93,10 @@ namespace DiegoMoyanoProject.Repository
             return deleted;
         }
 
-        public List<DateTime> GetAllDates()
+        public List<FileDate> GetAllDates()
         {
-            string queryString = "SELECT DISTINCT date from UserPdf"; ;
-            List<DateTime> dates = new List<DateTime>();
+            string queryString = "SELECT date, id from UserPdf"; ;
+            List<FileDate> dates = new List<FileDate>();
             using (var connection = new SqliteConnection(_connectionString))
             {
                 var command = new SqliteCommand(queryString, connection);
@@ -104,8 +105,9 @@ namespace DiegoMoyanoProject.Repository
                 {
                     while (reader.Read())
                     {
-                        DateTime date = DateTime.Parse(reader[0].ToString());
-                        dates.Add(date);
+                        int id = Convert.ToInt32(reader["id"]);
+                        DateTime date = DateTime.Parse(reader["date"].ToString());
+                        dates.Add(new FileDate(id, date));
                     }
                 }
                 connection.Close();
@@ -118,7 +120,7 @@ namespace DiegoMoyanoProject.Repository
             bool deleted = false;
             if (this.countImagesAdded() >= maxSupported)
             {
-                string queryString = "DELETE FROM UserPdf WHERE date = (SELECT min(date) FROM UserPdf)";
+                string queryString = "DELETE FROM UserPdf WHERE id = (select min(id) from UserPdf)";
                 using (var connection = new SqliteConnection(_connectionString))
                 {
                     var command = new SqliteCommand(queryString, connection);
@@ -143,6 +145,36 @@ namespace DiegoMoyanoProject.Repository
                 connection.Close();
             }
             return total;
+        }
+        public int GetMaxId()
+        {
+            string queryString = "SELECT max(id) FROM UserPdf";
+            //Not exists
+            int id = -1;
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                var command = new SqliteCommand(queryString, connection);
+                connection.Open();
+                var reader = command.ExecuteScalar();
+                if (reader != null) id = Convert.ToInt32(reader);
+                connection.Close();
+            }
+            return id;
+        }
+        public bool DeleteRow(int id)
+        {
+            string queryString = "DELETE FROM UserPdf WHERE id = @id";
+            bool deleted = false;
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                var command = new SqliteCommand(queryString, connection);
+                command.Parameters.Add(new SqliteParameter("@id", id));
+                connection.Open();
+                deleted = command.ExecuteNonQuery() > 0;
+                connection.Close();
+            }
+            if (!deleted) throw new NotImplementedException("Error al insertar un nuevo registro en imagenes");
+            return deleted;
         }
     }
 }

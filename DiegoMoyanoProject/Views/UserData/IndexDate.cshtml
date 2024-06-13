@@ -42,11 +42,11 @@
     {
         <div class="container text-center" id="dates-container">
             <ul class="list-group list-unstyled d-flex flex-row flex-wrap justify-content-center">
-                @foreach (var date in Model.Dates)
+                @foreach (var imageDate in Model.Dates)
                 {
                     <li class="border m-2 border-primary rounded">
-                        <a asp-controller="UserData" asp-action="IndexDate" asp-route-date="@date.ToString("yyyy-MM-dd")" class="text-decoration-none list-group-item btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder">
-                            @date.ToString("yyyy-MM-dd")
+                        <a asp-controller="UserData" asp-action="IndexDate" asp-route-date="@imageDate.Date.ToString("yyyy-MM-dd")" asp-route-id="@imageDate.Id" class="text-decoration-none list-group-item btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder">
+                            @imageDate.Date.ToString("yyyy-MM-dd")
                         </a>
                     </li>
                 }

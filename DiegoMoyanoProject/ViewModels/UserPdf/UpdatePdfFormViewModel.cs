@@ -8,10 +8,12 @@ namespace DiegoMoyanoProject.ViewModels.UserPdf
         [Required(ErrorMessage = "Este campo es requerido")]
         public IFormFile? InputFile { get; set; }
         public DateTime Date { get; set; }
+        public int Id { get; set; }
         public UpdatePdfFormViewModel() { }
-        public UpdatePdfFormViewModel(DateTime date)
+        public UpdatePdfFormViewModel(DateTime date, int id)
         {
             this.Date = date;
+            this.Id =id ;
         }
     }
 }

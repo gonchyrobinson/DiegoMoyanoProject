@@ -8,14 +8,16 @@ namespace DiegoMoyanoProject.ViewModels.UserData
 
         public ImageDataViewModel() { }
 
-        public ImageDataViewModel(string? path, ImageType imageType)
+        public ImageDataViewModel(string? path, ImageType imageType, int id)
         {
             Path = path;
             ImageType = imageType;
+            Id = id;
         }
 
         public string? Path { get; set; }
         public ImageType ImageType { get; set; }
+        public int Id { get; set; }
         public string GetImageTypeDescription()
         {
             var field = ImageType.GetType().GetField(ImageType.ToString());

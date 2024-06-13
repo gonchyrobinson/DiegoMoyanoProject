@@ -4,7 +4,7 @@
     <h1 class="display-4">Reportes del @Model.SelectedDate.ToShortDateString()</h1>
 </div>
 
-<div class="container row" >
+<div class="container row">
     <div class="container text-center col-lg-4 col-md-6 col-sm-12">
         @if (Model.PdfData != null)
         {
@@ -25,14 +25,14 @@
         <ul class="action-list list-unstyled list-inline">
             @if (Model.PdfData != null)
             {
-                <li><a asp-controller="UserPdf" asp-action="UpdatePdfForm"  asp-route-date="@Model.SelectedDate.ToShortDateString()" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
-                <li><a asp-controller="UserPdf" asp-action="Delete"  asp-route-date="@Model.SelectedDate.ToShortDateString()" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserPdf" asp-action="UpdatePdfForm" asp-route-date="@Model.SelectedDate.ToShortDateString()" asp-route-id="@Model.SelectedId" data-tip="edit" class="list-inline-item"><i class="fa fa-edit" aria-hidden="true"></i></a></li>
+                <li><a asp-controller="UserPdf" asp-action="Delete" asp-route-date="@Model.SelectedDate.ToShortDateString()" asp-route-id="@Model.SelectedId" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
             }
             else
             {
                 if (Model.Dates.Count() > 0)
-                {   
-                    <li><a asp-controller="UserPdf" asp-action="UpdatePdfForm" asp-route-date="@Model.SelectedDate" data-tip="edit" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
+                {
+                    <li><a asp-controller="UserPdf" asp-action="UpdatePdfForm" asp-route-date="@Model.SelectedDate" asp-route-id="@Model.SelectedId" data-tip="edit" class="list-inline-item"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></li>
                 }
             }
         </ul>
@@ -46,12 +46,18 @@
     {
         <div class="container text-center">
             <ul class="list-group list-unstyled d-flex flex-row flex-wrap justify-content-center">
-                @foreach (var date in Model.Dates)
+                @foreach (var modelDate in Model.Dates)
                 {
                     <li class="border m-2 border-primary rounded">
-                        <a asp-controller="UserPdf" asp-action="IndexOwner" asp-route-date="@date.ToString("yyyy-MM-dd")" class="text-decoration-none list-group-item btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder">
-                            @date.ToString("yyyy-MM-dd")
-                        </a>
+                        <ul class="action-list list-unstyled list-inline">
+                            <li>
+                                <a asp-controller="UserPdf" asp-action="IndexOwner" asp-route-date="@modelDate.Date.ToString("yyyy-MM-dd")" asp-route-id="@modelDate.Id" class="text-decoration-none list-group-item btn btn-outline-primary btn-lg px-5 py-3 fs-6 fw-bolder">
+                                    @modelDate.Date.ToString("yyyy-MM-dd")
+                                </a>
+                            </li>
+                            <li><a asp-controller="UserPdf" asp-action="DeleteRow" asp-route-id="@Model.SelectedId" data-tip="delete" class="list-inline-item"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+
+                        </ul>
                     </li>
                 }
             </ul>
